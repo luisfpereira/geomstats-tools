@@ -1,13 +1,19 @@
 
 import os
+import pathlib
 
 from calatrava.parser.ast.uml import (
     PackageManager,
     Package,
 )
 
+DEFAULT_TEMPLATE_DIR = os.path.join(
+    pathlib.Path(__file__).parent.resolve(),
+    "template",
+)
 
-def get_base_class_names(cls_import):
+
+def get_class_given_import(cls_import):
     visitor_type = "basic"
     package = Package("geomstats", classes_visitor=visitor_type)
     package_manager = PackageManager([package])
@@ -18,6 +24,11 @@ def get_base_class_names(cls_import):
     class_ = package_manager.get_classes()[cls_import]
     if not class_.found:
         raise Exception(f"Cannot find `{cls_import}`")
+
+    return class_
+
+
+def get_base_class_names(class_):
     return [base_class.name for base_class in class_.bases]
 
 
@@ -58,7 +69,7 @@ def update_filename(class_short_filename, short_filename):
     return short_filename.replace("class_short_filename", class_short_filename)
 
 
-def get_updated_codes(placeholders, short_filenames, template_dir):
+def get_updated_codes(placeholders, short_filenames, template_dir=DEFAULT_TEMPLATE_DIR):
     codes = {}
     for short_filename in short_filenames:
         code_str = get_updated_code(placeholders, short_filename, template_dir)
@@ -104,22 +115,3 @@ def output_to_files(codes, geomstats_repo_dir, cls_import):
         msg += f"\n\t-{path}"
 
     print(msg)
-
-
-if __name__ == "__main__":
-    template_dir = "template"
-    geomstats_repo_dir = "/user/lgomespe/home/Repos/github/geomstats"
-    cls_import = "geomstats.geometry.euclidean.Euclidean"
-
-    base_names = get_base_class_names(cls_import)
-    placeholders = get_placeholders(cls_import, base_names)
-
-    filenames = [
-        "test_class_short_filename.py",
-        "class_short_filename.py",
-        "class_short_filename_data.py"
-    ]
-
-    codes = get_updated_codes(placeholders, filenames, template_dir)
-
-    output_to_files(codes, geomstats_repo_dir, cls_import)
