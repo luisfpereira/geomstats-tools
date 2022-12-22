@@ -74,7 +74,7 @@ class Printer:
         return f"\n{method_name}:\n"
 
     def _direct_method_str(self, has_direct_method):
-        return f"{self._tab}has direct test? {True}\n"
+        return f"{self._tab}has direct test? {has_direct_method}\n"
 
     def _related_tests_str(self, related_tests):
         string = f"{self._tab}related tests:\n"
