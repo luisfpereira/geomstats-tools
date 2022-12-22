@@ -1,6 +1,3 @@
-from geomstats_tools.calatrava_utils import (
-    get_classes_given_imports,
-)
 
 # TODO: move filters to calatrava
 # TODO: need to understand how to keep it consistent
@@ -47,7 +44,9 @@ def collect_info_tests(methods_names, test_names):
     missing_tests = []
 
     for method_name in methods_names:
-        if has_direct_test(method_name, test_names):
+        has_direct_test_ = has_direct_test(method_name, test_names)
+
+        if has_direct_test_:
             direct_tests.append(method_name)
 
         related_tests_ = get_related_tests(
@@ -55,7 +54,7 @@ def collect_info_tests(methods_names, test_names):
         if related_tests_:
             related_tests[method_name] = related_tests_
 
-        if not has_direct_test and not related_tests:
+        if not has_direct_test_ and len(related_tests_) == 0:
             missing_tests.append(method_name)
 
     return direct_tests, related_tests, missing_tests
@@ -103,10 +102,10 @@ class Printer:
             string += self._direct_method_str(False)
             string += self._related_tests_str(related_tests[method_name])
 
-        if not missing_tests:
+        if len(missing_tests) == 0:
             return string
 
-        string += "\nmissing tests:"
+        string += "\nmissing tests for:"
         for method_name in missing_tests:
             string += f"\n{self._tab}{method_name}"
 
