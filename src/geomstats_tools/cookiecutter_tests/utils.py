@@ -2,30 +2,11 @@
 import os
 import pathlib
 
-from calatrava.parser.ast.uml import (
-    PackageManager,
-    Package,
-)
 
 DEFAULT_TEMPLATE_DIR = os.path.join(
     pathlib.Path(__file__).parent.resolve(),
     "template",
 )
-
-
-def get_class_given_import(cls_import):
-    visitor_type = "basic"
-    package = Package("geomstats", classes_visitor=visitor_type)
-    package_manager = PackageManager([package])
-
-    package_manager.find(cls_import)
-    package_manager.update_inheritance()
-
-    class_ = package_manager.get_classes()[cls_import]
-    if not class_.found:
-        raise Exception(f"Cannot find `{cls_import}`")
-
-    return class_
 
 
 def get_base_class_names(class_):

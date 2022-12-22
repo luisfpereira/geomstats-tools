@@ -1,10 +1,10 @@
 from geomstats_tools.config_utils import load_from_config
 
+from geomstats_tools.calatrava_utils import get_class_given_import
 from .utils import (
     get_base_class_names,
     get_placeholders,
     get_updated_codes,
-    get_class_given_import,
     output_to_files,
 )
 
