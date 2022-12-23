@@ -14,11 +14,16 @@ def get_base_class_names(class_):
 
 
 def get_placeholders(cls_import, base_names):
+    cls_import_ls = cls_import.split(".")
+    class_name = cls_import_ls[-1]
+    if class_name.startswith('_'):
+        class_name = class_name[1:]
+
     placeholders = {
-        "class_name": cls_import.split(".")[-1],
-        "class_full_import": ".".join(cls_import.split(".")[:-1]),
-        "class_test_import": "geomstats.test." + ".".join(cls_import.split(".")[1:-1]),
-        "class_short_filename": cls_import.split(".")[-2],
+        "class_name": class_name,
+        "class_full_import": ".".join(cls_import_ls[:-1]),
+        "class_test_import": "geomstats.test." + ".".join(cls_import_ls[1:-1]),
+        "class_short_filename": cls_import_ls[-2],
         "base_classes_test_cases": ", ".join([f"{base_name}TestCase" for base_name in base_names]),
         "base_classes_test_data": ", ".join([f"{base_name}TestData" for base_name in base_names]),
     }
