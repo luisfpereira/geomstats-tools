@@ -10,6 +10,24 @@
 
 import click
 
+_geomstats_repo_dir_option = click.option(
+    '--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
+
+_data_cls_import_option = click.option(
+    '--data-cls-import', '-i', nargs=1, type=str, default=None)
+
+_tests_loc_option = click.option('--tests-loc', '-t', nargs=1, type=str,
+                                 default="tests2")
+
+
+def add_options(options):
+    # https://stackoverflow.com/a/40195800/11011913
+    def _add_options(func):
+        for option in reversed(options):
+            func = option(func)
+        return func
+    return _add_options
+
 
 @click.group()
 def main_cli():
@@ -18,7 +36,7 @@ def main_cli():
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@click.option('--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
+@add_options([_geomstats_repo_dir_option])
 def cookiecutter_tests(cls_import, geomstats_repo_dir):
     """Creates the required objects to test a new class.
     """
@@ -29,8 +47,8 @@ def cookiecutter_tests(cls_import, geomstats_repo_dir):
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@click.option('--test-cls-import', '-t', nargs=1, type=str, default=None)
-@click.option('--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
+@click.option('--test-cls-import', '-i', nargs=1, type=str, default=None)
+@add_options([_geomstats_repo_dir_option])
 def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
     """Prints information about public methods and available tests.
     """
@@ -43,9 +61,11 @@ def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@click.option('--data-cls-import', '-i', nargs=1, type=str, default=None)
-@click.option('--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
-@click.option('--tests-loc', '-t', nargs=1, type=str, default="tests2")
+@add_options([
+    _data_cls_import_option,
+    _geomstats_repo_dir_option,
+    _tests_loc_option,
+])
 def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Sorts data methods according to test class order.
 
@@ -66,9 +86,11 @@ def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@click.option('--data-cls-import', '-i', nargs=1, type=str, default=None)
-@click.option('--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
-@click.option('--tests-loc', '-t', nargs=1, type=str, default="tests2")
+@add_options([
+    _data_cls_import_option,
+    _geomstats_repo_dir_option,
+    _tests_loc_option,
+])
 def missing_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Prints methods missing in data.
 
