@@ -25,9 +25,9 @@ def update_test_cls_import(func):
         if test_cls_import is None:
             test_cls_import = get_test_cls_import_default(cls_import)
 
-            return func(cls_import, *args, test_cls_import=test_cls_import, **kwargs)
+        return func(cls_import, *args, test_cls_import=test_cls_import, **kwargs)
 
-        return _wrapped
+    return _wrapped
 
 
 def get_info_from_data_import(cls_import, data_cls_import, tests_loc):

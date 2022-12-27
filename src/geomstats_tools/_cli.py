@@ -52,11 +52,10 @@ def cookiecutter_tests(cls_import, geomstats_repo_dir):
 def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
     """Prints information about public methods and available tests.
     """
-    # TODO: pass geomstats_dir to calatrava
+    from geomstats_tools.info_tests import print_info_tests
 
-    from geomstats_tools.info_tests import get_info_tests
-
-    get_info_tests(cls_import, test_cls_import=test_cls_import)
+    print_info_tests(cls_import, test_cls_import=test_cls_import,
+                     geomstats_repo_dir=geomstats_repo_dir)
 
 
 @main_cli.command()

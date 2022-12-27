@@ -1,1 +1,1 @@
-from .script import get_info_tests
+from .script import print_info_tests
