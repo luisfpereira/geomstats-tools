@@ -59,13 +59,13 @@ def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
 
 
 @main_cli.command()
-@click.argument('cls-import', nargs=1, type=str)
+@click.argument('test-cls-import', nargs=1, type=str)
 @add_options([
     _data_cls_import_option,
     _geomstats_repo_dir_option,
     _tests_loc_option,
 ])
-def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
+def sort_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Sorts data methods according to test class order.
 
     Notes
@@ -76,7 +76,7 @@ def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc
         sort_data_methods as sort_data_methods_,
     )
     sort_data_methods_(
-        cls_import,
+        test_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
@@ -84,13 +84,13 @@ def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc
 
 
 @main_cli.command()
-@click.argument('cls-import', nargs=1, type=str)
+@click.argument('test-cls-import', nargs=1, type=str)
 @add_options([
     _data_cls_import_option,
     _geomstats_repo_dir_option,
     _tests_loc_option,
 ])
-def missing_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
+def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Prints methods missing in data.
 
     Only considers methods for which automatic data can be generated, i.e.
@@ -99,7 +99,7 @@ def missing_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_
     from geomstats_tools.missing_data_methods import print_missing_data_methods
 
     print_missing_data_methods(
-        cls_import,
+        test_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc

@@ -12,11 +12,11 @@ DEFAULT_MARKERS = ('pytest.mark.vec', 'pytest.mark.random')
 
 
 @update_geomstats_repo_dir
-def print_missing_data_methods(cls_import, *, data_cls_import=None,
+def print_missing_data_methods(test_cls_import, *, data_cls_import=None,
                                geomstats_repo_dir=None, tests_loc="tests",
                                markers=DEFAULT_MARKERS):
     data_module_import, data_cls_name = get_info_from_data_import(
-        cls_import, data_cls_import, tests_loc
+        test_cls_import, data_cls_import, tests_loc
     )
 
     data_cls_import = f"{data_module_import}.{data_cls_name}"
@@ -24,7 +24,7 @@ def print_missing_data_methods(cls_import, *, data_cls_import=None,
     packages_dir = [os.path.join(geomstats_repo_dir, "geomstats"),
                     os.path.join(geomstats_repo_dir, tests_loc)]
     class_, data_class = get_classes_given_imports(
-        [cls_import, data_cls_import], visitor_type="basic-methods",
+        [test_cls_import, data_cls_import], visitor_type="basic-methods",
         packages_dir=packages_dir
     )
 
