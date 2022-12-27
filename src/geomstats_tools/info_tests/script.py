@@ -1,7 +1,8 @@
 
 from geomstats_tools.calatrava_utils import get_classes_given_imports
+from geomstats_tools.args_manip import update_test_cls_import
+
 from .utils import (
-    _get_test_name_default,
     keep_only_public_methods,
     remove_repeated_methods,
     collect_info_tests,
@@ -9,10 +10,14 @@ from .utils import (
 )
 
 
-def get_info_tests(cls_import, test_cls_import=None):
-    if test_cls_import is None:
-        test_cls_import = _get_test_name_default(cls_import)
+# TODO: add missing vectorization tests
+# TODO: add missing data for
+# TODO: get all "normal" tests (somehow related with above)
+# TODO: get info missing data (consider only marked methods)
 
+
+@update_test_cls_import
+def get_info_tests(cls_import, *, test_cls_import=None):
     classes = get_classes_given_imports(
         [cls_import, test_cls_import], visitor_type="basic-methods"
     )

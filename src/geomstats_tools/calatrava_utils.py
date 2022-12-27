@@ -5,9 +5,14 @@ from calatrava.parser.ast.uml import (
 )
 
 
-def get_classes_given_imports(imports, visitor_type="basic"):
-    package = Package("geomstats", classes_visitor=visitor_type)
-    package_manager = PackageManager([package])
+def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
+    if packages_dir is None:
+        packages = [Package("geomstats", classes_visitor=visitor_type)]
+    else:
+        packages = [Package(package_dir, classes_visitor=visitor_type)
+                    for package_dir in packages_dir]
+
+    package_manager = PackageManager(packages)
 
     for cls_import in imports:
         package_manager.find(cls_import)

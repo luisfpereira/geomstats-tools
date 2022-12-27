@@ -1,4 +1,4 @@
-from geomstats_tools.config_utils import load_from_config
+from geomstats_tools.args_manip import update_geomstats_repo_dir
 
 from geomstats_tools.calatrava_utils import get_class_given_import
 from .utils import (
@@ -9,11 +9,9 @@ from .utils import (
 )
 
 
-def create_test(cls_import, geomstats_repo_dir=None):
+@update_geomstats_repo_dir
+def create_test(cls_import, *, geomstats_repo_dir=None):
     # TODO: better placeholds may be required
-
-    if geomstats_repo_dir is None:
-        geomstats_repo_dir = load_from_config("geomstats_repo_dir")
 
     class_ = get_class_given_import(cls_import)
     base_names = get_base_class_names(class_)

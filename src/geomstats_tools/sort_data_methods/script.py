@@ -1,29 +1,26 @@
 import os
 
 from geomstats_tools.calatrava_utils import get_class_given_import
-from geomstats_tools.config_utils import load_from_config
-from .utils import (
+from geomstats_tools.parsing_utils import (
     get_source,
-    get_test_data_loc,
-    reorder_methods_given_source,
     write_source,
 )
+from geomstats_tools.args_manip import (
+    update_geomstats_repo_dir,
+    get_info_from_data_import,
+)
+from .utils import reorder_methods_given_source
 
 
-def sort_data_methods(cls_import, data_cls_import=None,
+# TODO: do this in batch
+
+
+@update_geomstats_repo_dir
+def sort_data_methods(cls_import, *, data_cls_import=None,
                       geomstats_repo_dir=None, tests_loc="tests"):
-    # TODO: add tests_loc to config?
-    # TODO: update config style
-
-    if geomstats_repo_dir is None:
-        geomstats_repo_dir = load_from_config("geomstats_repo_dir")
-
-    if data_cls_import is None:
-        data_module_import, data_cls_name = get_test_data_loc(cls_import, tests_loc)
-    else:
-        data_cls_import_ls = data_cls_import.split('.')
-        data_module_import = '.'.join(data_cls_import_ls[:-1])
-        data_cls_name = data_cls_import_ls[-1]
+    data_module_import, data_cls_name = get_info_from_data_import(
+        cls_import, data_cls_import, tests_loc
+    )
 
     class_ = get_class_given_import(cls_import, visitor_type="basic-methods")
     method_names = [method.short_name for method in class_.methods

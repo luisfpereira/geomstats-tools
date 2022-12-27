@@ -17,11 +17,6 @@ def remove_repeated_methods(methods):
     return non_rep_methods
 
 
-def _get_test_name_default(cls_import):
-    cls_import_ls = cls_import.split('.')
-    return f"{cls_import_ls[0]}.test.{'.'.join(cls_import_ls[1:])}TestCase"
-
-
 def has_direct_test(method_name, test_names):
     return f"test_{method_name}" in test_names
 
