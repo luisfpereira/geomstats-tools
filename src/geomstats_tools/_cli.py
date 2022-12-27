@@ -62,3 +62,24 @@ def sort_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
     )
+
+
+@main_cli.command()
+@click.argument('cls-import', nargs=1, type=str)
+@click.option('--data-cls-import', '-i', nargs=1, type=str, default=None)
+@click.option('--geomstats-repo-dir', '-d', nargs=1, type=str, default=None)
+@click.option('--tests-loc', '-t', nargs=1, type=str, default="tests2")
+def missing_data_methods(cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
+    """Prints methods missing in data.
+
+    Only considers methods for which automatic data can be generated, i.e.
+    methods marker with `pytest.mark.vec` or `pytest.mark.random`.
+    """
+    from geomstats_tools.missing_data_methods import print_missing_data_methods
+
+    print_missing_data_methods(
+        cls_import,
+        data_cls_import=data_cls_import,
+        geomstats_repo_dir=geomstats_repo_dir,
+        tests_loc=tests_loc
+    )
