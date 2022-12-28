@@ -6,7 +6,10 @@ from geomstats_tools.args_manip import (
     update_geomstats_repo_dir,
     get_info_from_data_import,
 )
-from .utils import get_missing_data_methods_names
+from .utils import (
+    get_missing_data_methods_names,
+    get_test_methods,
+)
 
 DEFAULT_MARKERS = ('pytest.mark.vec', 'pytest.mark.random')
 
@@ -28,8 +31,9 @@ def print_missing_data_methods(test_cls_import, *, data_cls_import=None,
         packages_dir=packages_dir
     )
 
+    test_methods = get_test_methods(class_, decorators=markers)
     missing_methods_names = get_missing_data_methods_names(
-        class_, data_class, decorators=markers)
+        test_methods, data_class.methods)
 
     if missing_methods_names:
         indentation = " " * 2

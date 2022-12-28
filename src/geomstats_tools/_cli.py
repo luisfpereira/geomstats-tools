@@ -8,6 +8,9 @@
 # TODO: add sanity tests
 
 
+# TODO: add messages
+
+
 import click
 
 _geomstats_repo_dir_option = click.option(
@@ -104,3 +107,44 @@ def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, t
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
     )
+
+
+@main_cli.command()
+@click.argument('test-cls-import', nargs=1, type=str)
+@add_options([
+    _data_cls_import_option,
+    _geomstats_repo_dir_option,
+    _tests_loc_option,
+])
+@click.option('--sort', '-s', is_flag=True, default=False)
+def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
+                     tests_loc, sort):
+    """Add missing data methods for `vec` and `random`.
+    """
+    from geomstats_tools.add_data_methods import add_missing_data_methods
+    from geomstats_tools.sort_data_methods import (
+        sort_data_methods as sort_data_methods_,
+    )
+
+    data_path = add_missing_data_methods(
+        test_cls_import,
+        data_cls_import=data_cls_import,
+        geomstats_repo_dir=geomstats_repo_dir,
+        tests_loc=tests_loc
+    )
+    if data_path is None:
+        print("All data methods are already defined")
+        return
+
+    msg = "Updated"
+    if sort:
+        sort_data_methods_(
+            test_cls_import,
+            data_cls_import=data_cls_import,
+            geomstats_repo_dir=geomstats_repo_dir,
+            tests_loc=tests_loc
+        )
+        msg += " and sorted"
+
+    msg += f" `{data_path}`"
+    print(msg)

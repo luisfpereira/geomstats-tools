@@ -32,3 +32,19 @@ def get_module_and_cls_from_import(cls_import):
     cls_name = data_cls_import_ls[-1]
 
     return module_import, cls_name
+
+
+def is_test(method_name):
+    return method_name.startswith("test_")
+
+
+def is_test_data(method_name):
+    return method_name.endswith("_test_data")
+
+
+def test_name_to_test_data_name(test_name):
+    return test_name[5:] + "_test_data"
+
+
+def test_data_name_to_test_name(data_name):
+    return f"test_{data_name[:-10]}"

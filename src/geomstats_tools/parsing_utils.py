@@ -29,7 +29,7 @@ def find_class_lims(class_name, source):
         if start_line is None:
             raise Exception("Cannot find class")
 
-        end_line = i
+        end_line = i + 1
 
     return start_line, end_line
 
@@ -52,8 +52,7 @@ def split_class(class_source):
     header = []
     line = ""
     i = 0
-    while True:
-        # TODO: class with no methods
+    while i < len(class_source):
         line = class_source[i]
         stripped_line = line.strip()
         if stripped_line.startswith("def") or stripped_line.startswith("@"):
@@ -64,6 +63,11 @@ def split_class(class_source):
         i += 1
 
     class_ = {"header": header}
+    if i == len(class_source):
+        if class_["header"][-1].strip() == "pass":
+            class_["header"] = class_["header"][:-1]
+
+        return class_
 
     cls_name = ""
     cls_lines = []
