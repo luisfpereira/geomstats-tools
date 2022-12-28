@@ -66,4 +66,4 @@ def add_missing_data_methods(test_cls_import, *, data_cls_import=None,
 
     write_source(data_path, new_data_source)
 
-    return data_path
+    return data_path, data_cls_name

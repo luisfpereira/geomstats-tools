@@ -35,10 +35,4 @@ def print_missing_data_methods(test_cls_import, *, data_cls_import=None,
     missing_methods_names = get_missing_data_methods_names(
         test_methods, data_class.methods)
 
-    if missing_methods_names:
-        indentation = " " * 2
-        print("The following data methods are missing:")
-        for method_name in missing_methods_names:
-            print(f'{indentation}{method_name}')
-    else:
-        print("All data methods are defined.")
+    return missing_methods_names

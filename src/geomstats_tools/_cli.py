@@ -78,12 +78,14 @@ def sort_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, test
     from geomstats_tools.sort_data_methods import (
         sort_data_methods as sort_data_methods_,
     )
-    sort_data_methods_(
+    data_path, data_cls_name = sort_data_methods_(
         test_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
     )
+
+    print(f"Sorted `{data_cls_name}` in `{data_path}`")
 
 
 @main_cli.command()
@@ -101,12 +103,20 @@ def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, t
     """
     from geomstats_tools.missing_data_methods import print_missing_data_methods
 
-    print_missing_data_methods(
+    missing_methods_names = print_missing_data_methods(
         test_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
     )
+
+    if missing_methods_names:
+        indentation = " " * 2
+        print("The following data methods are missing:")
+        for method_name in missing_methods_names:
+            print(f'{indentation}{method_name}')
+    else:
+        print("All data methods are defined.")
 
 
 @main_cli.command()
@@ -126,7 +136,7 @@ def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
         sort_data_methods as sort_data_methods_,
     )
 
-    data_path = add_missing_data_methods(
+    data_path, data_cls_name = add_missing_data_methods(
         test_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
@@ -146,5 +156,5 @@ def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
         )
         msg += " and sorted"
 
-    msg += f" `{data_path}`"
+    msg += f" `{data_cls_name}` in `{data_path}`"
     print(msg)
