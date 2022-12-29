@@ -1,10 +1,4 @@
 from geomstats_tools.naming_utils import test_data_name_to_test_name
-from geomstats_tools.parsing_utils import (
-    find_class_lims,
-    split_class,
-    add_updated_cls_to_source,
-    from_cls_dict_to_list,
-)
 
 
 def identify_test_type(test_methods, missing_data_methods_names, markers):
@@ -24,10 +18,10 @@ def identify_test_type(test_methods, missing_data_methods_names, markers):
 
 
 TYPE2SNIPPET = {
-    "vec": """    def `func_name`(self):
+    "vec": """    def {func_name}(self):
         data = [dict(n_reps=n_reps) for n_reps in self.N_VEC_REPS]
         return self.generate_tests(data)\n""",
-    "random": """    def `func_name`(self):
+    "random": """    def {func_name}(self):
         data = [dict(n_points=n_points) for n_points in self.N_RANDOM_POINTS]
         return self.generate_tests(data)\n""",
 }
@@ -35,4 +29,4 @@ TYPE2SNIPPET = {
 
 def write_test_data_snippet(func_name, type_):
     snippet = TYPE2SNIPPET[type_]
-    return snippet.replace("`func_name`", func_name)
+    return snippet.format(func_name=func_name)
