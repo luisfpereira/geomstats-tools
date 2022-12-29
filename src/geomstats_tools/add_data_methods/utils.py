@@ -36,17 +36,3 @@ TYPE2SNIPPET = {
 def write_test_data_snippet(func_name, type_):
     snippet = TYPE2SNIPPET[type_]
     return snippet.replace("`func_name`", func_name)
-
-
-def add_methods_to_class_given_source(source, class_name, methods_dict):
-    start_line, end_line = find_class_lims(class_name, source)
-    cls_source = source[start_line:end_line]
-
-    cls_dict = split_class(cls_source)
-    cls_dict.update(methods_dict)
-    new_cls_source = from_cls_dict_to_list(cls_dict)
-
-    new_source = add_updated_cls_to_source(
-        source, new_cls_source, start_line, end_line)
-
-    return new_source

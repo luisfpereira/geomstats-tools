@@ -4,6 +4,32 @@ from calatrava.parser.ast.uml import (
     Package,
 )
 
+# TODO: move filters to calatrava
+# TODO: need to understand how to keep it consistent
+
+
+def keep_only_public_methods(methods):
+    return [method for method in methods
+            if method.is_public and not method.is_setter]
+
+
+def remove_repeated_methods(methods):
+    non_rep_methods = []
+    for method in methods:
+        if method.short_name not in non_rep_methods:
+            non_rep_methods.append(method)
+
+    return non_rep_methods
+
+
+def keep_only_newly_defined_methods(methods, base_methods):
+    base_methods_names = set([method.short_name for method in base_methods])
+    return [method for method in methods if method.short_name not in base_methods_names]
+
+
+def remove_properties(methods):
+    return [method for method in methods if not method.is_property]
+
 
 def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
     if packages_dir is None:

@@ -13,11 +13,11 @@ from geomstats_tools.missing_data_methods.utils import (
 from geomstats_tools.parsing_utils import (
     get_source,
     write_source,
+    add_methods_to_class_given_source,
 )
 from .utils import (
     identify_test_type,
     write_test_data_snippet,
-    add_methods_to_class_given_source,
 )
 
 

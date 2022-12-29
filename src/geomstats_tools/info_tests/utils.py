@@ -1,24 +1,5 @@
 
-# TODO: move filters to calatrava
-# TODO: need to understand how to keep it consistent
-
-
-def keep_only_public_methods(methods):
-    return [method for method in methods
-            if method.is_public and not method.is_setter]
-
-
-def remove_repeated_methods(methods):
-    non_rep_methods = []
-    for method in methods:
-        if method.short_name not in non_rep_methods:
-            non_rep_methods.append(method)
-
-    return non_rep_methods
-
-
-def has_direct_test(method_name, test_names):
-    return f"test_{method_name}" in test_names
+from geomstats_tools.naming_utils import has_direct_test
 
 
 def get_related_tests(method_name, test_names):

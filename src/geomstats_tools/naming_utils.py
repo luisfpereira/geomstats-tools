@@ -48,3 +48,11 @@ def test_name_to_test_data_name(test_name):
 
 def test_data_name_to_test_name(data_name):
     return f"test_{data_name[:-10]}"
+
+
+def has_direct_test(method_name, test_names):
+    return f"test_{method_name}" in test_names
+
+
+def has_vec_test(method_name, tests_names):
+    return f"test_{method_name}_vec" in tests_names

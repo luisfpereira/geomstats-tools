@@ -1,15 +1,18 @@
 
 import os
 
-from geomstats_tools.calatrava_utils import get_classes_given_imports
+from geomstats_tools.calatrava_utils import (
+    get_classes_given_imports,
+    keep_only_public_methods,
+    remove_repeated_methods,
+)
 from geomstats_tools.args_manip import (
     update_test_cls_import,
     update_geomstats_repo_dir,
 )
+from geomstats_tools.naming_utils import is_test
 
 from .utils import (
-    keep_only_public_methods,
-    remove_repeated_methods,
     collect_info_tests,
     Printer,
 )
@@ -33,7 +36,7 @@ def print_info_tests(cls_import, *, test_cls_import=None,
         keep_only_public_methods(classes[1].all_methods)
     )
     tested_methods_names = [method.short_name for method in tested_methods
-                            if method.short_name.startswith("test_")]
+                            if is_test(method.short_name)]
 
     direct_tests, related_tests, missing_tests = collect_info_tests(
         cls_methods_names, tested_methods_names)

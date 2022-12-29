@@ -93,6 +93,9 @@ def split_class(class_source):
 def from_cls_dict_to_list(cls_dict):
     lines = []
     for lines_ in cls_dict.values():
+        if type(lines_) is str:
+            lines_ = lines_.splitlines(True)
+
         if lines and lines[-1] != "\n":
             lines_.append('\n')
         lines.extend(lines_)
@@ -101,12 +104,26 @@ def from_cls_dict_to_list(cls_dict):
 
 
 def add_updated_cls_to_source(source, cls_source, start_line, end_line):
-    source_ = [line for line in source[:start_line]]
-    for line in cls_source:
-        source_.append(line)
+    if type(cls_source) is str:
+        cls_source = cls_source.splitlines(True)
 
-    for line in source[end_line:]:
-        source_.append(line)
+    source_ = source[:start_line]
+    source_.extend(cls_source)
+    source_.extend(source[end_line:])
 
     source.append('\n')
     return source_
+
+
+def add_methods_to_class_given_source(source, class_name, methods_dict):
+    start_line, end_line = find_class_lims(class_name, source)
+    cls_source = source[start_line:end_line]
+
+    cls_dict = split_class(cls_source)
+    cls_dict.update(methods_dict)
+    new_cls_source = from_cls_dict_to_list(cls_dict)
+
+    new_source = add_updated_cls_to_source(
+        source, new_cls_source, start_line, end_line)
+
+    return new_source
