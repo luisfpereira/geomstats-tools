@@ -3,7 +3,6 @@ from geomstats_tools.naming_utils import (
     has_vec_test,
 )
 
-# TODO: better strategy than replace? lazy evaluation
 
 TAB = " " * 4
 
@@ -28,68 +27,80 @@ def collect_methods_info(cls_methods, tested_methods_names):
 
 VERIFICATION_MSG = "# TODO: generated automatically. check if correct"
 
-DIRECT_TEST_CODE_SNIPPET = f"""    def test_`func_name`(self, `args_list`, expected, atol):
-        {VERIFICATION_MSG}
-        res = self.space.`func_name`(`args_list`)
-        self.assertAllClose(res, expected, atol=atol)
-"""
 
-
-def _write_direct_test_snippet(method):
+def _write_direct_test_snippet(method, level=1):
     args = [arg for arg in method.args_list if arg != "self"]
-    code = (DIRECT_TEST_CODE_SNIPPET
-            .replace("`func_name`", method.short_name)
-            .replace("`args_list`", ", ".join(args))
-            )
+    fnc_lvl = level + 1
 
-    return code
+    code = TAB * level + "def test_{func_name}(self, {args_list}, expected, atol):\n"
+    code += f"{TAB*fnc_lvl}{VERIFICATION_MSG}\n"
 
+    code += TAB * fnc_lvl + "res = self.space.{func_name}({args_list})\n"
+    code += f"{TAB*fnc_lvl}self.assertAllClose(res, expected, atol=atol)\n"
 
-def _base_point_snippet(arg_name, left_space=TAB * 2):
-    return f"{left_space}{arg_name} = self.space.random_point()\n"
-
-
-def _tangent_point_snippet(arg_name, base_point="base_point", left_space=TAB * 2):
-    return f"{left_space}{arg_name} = get_random_tangent_vec(self.space, {base_point})\n"
+    return code.format(
+        func_name=method.short_name, args_list=", ".join(args))
 
 
-def _write_vec_test_snippet(method):
-    # TODO: add indentation later?
-    # TODO: split in shorter functions
+def _base_point_snippet(arg_name, level=2):
+    return f"{TAB*level}{arg_name} = self.space.random_point()\n"
 
-    func_name = method.short_name
-    args = [arg for arg in method.args_list if arg != "self"]
 
-    code = f"{TAB}@pytest.mark.vec\n"
-    code += f"{TAB}def test_{func_name}_vec(self, n_reps, atol):\n"
-    code += f"{2*TAB}{VERIFICATION_MSG}\n"
+def _tangent_point_snippet(arg_name, base_point="base_point", level=2):
+    return f"{TAB*level}{arg_name} = get_random_tangent_vec(self.space, {base_point})\n"
+
+
+def _write_point_creation_snippet(args, level=2):
+    code = ""
 
     point_args = [arg for arg in args if arg.endswith("point")]
     tangent_vec_args = [arg for arg in args if arg.startswith("tangent_vec")]
     for arg in point_args + tangent_vec_args:
         if arg.endswith("point"):
-            code += _base_point_snippet(arg)
+            code += _base_point_snippet(arg, level=level)
 
         # TODO: is this generic enough?
         elif arg.startswith("tangent_vec"):
-            code += _tangent_point_snippet(arg, point_args[0])
+            code += _tangent_point_snippet(arg, point_args[0], level=level)
 
-    # TODO: space or metric
-    code += f"\n{TAB*2}expected = self.space.{func_name}({', '.join(args)})\n"
+    return code
 
-    code += f"\n{TAB*2}vec_data = generate_vectorization_data(\n"
+
+def _write_generate_vec_snippet(args, level=2):
+    arg_lvl = level + 1
+
+    code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
     kw_args = ', '.join([f"{arg}={arg}" for arg in args])
-    code += f"{TAB*3}data = dict({kw_args}, expected=expect, atol=atol),\n"
+    code += f"{TAB*arg_lvl}data = dict({kw_args}, expected=expect, atol=atol),\n"
 
     vec_arg_names = ", ".join([f'"{arg}"' for arg in args
                                if arg.startswith("tangent_vec") or arg.endswith("point")])
-    code += f"{TAB*3}arg_names=[{vec_arg_names}],\n"
+    code += f"{TAB*arg_lvl}arg_names=[{vec_arg_names}],\n"
 
-    code += f'{TAB*3}expected_name="expected",\n'
-    code += f"{TAB*3}n_reps=n_reps,\n"
-    code += f"{TAB*2})\n"
-    code += f"{TAB*2}self._test_vectorization(vec_data)\n"
+    code += f'{TAB*arg_lvl}expected_name="expected",\n'
+    code += f"{TAB*arg_lvl}n_reps=n_reps,\n"
+    code += f"{TAB*level})\n"
+    code += f"{TAB*level}self._test_vectorization(vec_data)\n"
+
+    return code
+
+
+def _write_vec_test_snippet(method, level=1):
+    func_name = method.short_name
+    args = [arg for arg in method.args_list if arg != "self"]
+    fnc_lvl = level + 1
+
+    code = f"{TAB*level}@pytest.mark.vec\n"
+    code += f"{TAB*level}def test_{func_name}_vec(self, n_reps, atol):\n"
+    code += f"{TAB*fnc_lvl}{VERIFICATION_MSG}\n"
+
+    code += _write_point_creation_snippet(args, level=fnc_lvl)
+
+    # TODO: space or metric
+    code += f"\n{TAB*fnc_lvl}expected = self.space.{func_name}({', '.join(args)})\n"
+
+    code += _write_generate_vec_snippet(args, level=fnc_lvl)
 
     return code
 
