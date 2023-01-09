@@ -4,7 +4,7 @@ from geomstats_tools.config_utils import load_from_config
 from geomstats_tools.naming_utils import (
     get_test_data_loc,
     get_module_and_cls_from_import,
-    get_test_cls_import_default,
+    get_test_case_cls_import_from_class,
 )
 
 
@@ -19,15 +19,11 @@ def update_geomstats_repo_dir(func):
     return _wrapped
 
 
-def update_test_cls_import(func):
-    @functools.wraps(func)
-    def _wrapped(cls_import, *args, test_cls_import=None, **kwargs):
-        if test_cls_import is None:
-            test_cls_import = get_test_cls_import_default(cls_import)
+def update_test_case_cls_import(class_, test_cls_import=None):
+    if test_cls_import is not None:
+        return test_cls_import
 
-        return func(cls_import, *args, test_cls_import=test_cls_import, **kwargs)
-
-    return _wrapped
+    return get_test_case_cls_import_from_class(class_)
 
 
 def get_info_from_data_import(cls_import, data_cls_import, tests_loc):

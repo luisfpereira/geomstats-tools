@@ -7,6 +7,10 @@
 
 # TODO: add sanity tests
 
+# TODO: make better distinction between test and test case?
+
+# TODO: be consistent with method names
+
 
 import click
 
@@ -14,8 +18,8 @@ _geomstats_repo_dir_option = click.option(
     '--geomstats-repo-dir', '-r', nargs=1, type=str, default=None)
 
 
-_test_cls_import_option = click.option(
-    '--test-cls-import', '-t', nargs=1, type=str, default=None)
+_test_case_cls_import_option = click.option(
+    '--test-case-cls-import', '-t', nargs=1, type=str, default=None)
 
 _data_cls_import_option = click.option(
     '--data-cls-import', '-d', nargs=1, type=str, default=None)
@@ -51,13 +55,13 @@ def cookiecutter_tests(cls_import, geomstats_repo_dir):
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@add_options([_test_cls_import_option, _geomstats_repo_dir_option])
-def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
+@add_options([_test_case_cls_import_option, _geomstats_repo_dir_option])
+def info_tests(cls_import, test_case_cls_import, geomstats_repo_dir):
     """Print information about public methods and available tests.
     """
     from geomstats_tools.info_tests import print_info_tests
 
-    print_info_tests(cls_import, test_cls_import=test_cls_import,
+    print_info_tests(cls_import, test_case_cls_import=test_case_cls_import,
                      geomstats_repo_dir=geomstats_repo_dir)
 
 
@@ -68,7 +72,7 @@ def info_tests(cls_import, test_cls_import, geomstats_repo_dir):
     _geomstats_repo_dir_option,
     _tests_loc_option,
 ])
-def sort_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
+def sort_data_methods(test_case_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Sort data methods according to test class order.
 
     Notes
@@ -79,7 +83,7 @@ def sort_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, test
         sort_data_methods as sort_data_methods_,
     )
     data_path, data_cls_name = sort_data_methods_(
-        test_cls_import,
+        test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
@@ -95,7 +99,7 @@ def sort_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, test
     _geomstats_repo_dir_option,
     _tests_loc_option,
 ])
-def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
+def missing_data_methods(test_case_cls_import, data_cls_import, geomstats_repo_dir, tests_loc):
     """Print methods missing in data.
 
     Only considers methods for which automatic data can be generated, i.e.
@@ -104,7 +108,7 @@ def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, t
     from geomstats_tools.missing_data_methods import print_missing_data_methods
 
     missing_methods_names = print_missing_data_methods(
-        test_cls_import,
+        test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
@@ -127,7 +131,7 @@ def missing_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir, t
     _tests_loc_option,
 ])
 @click.option('--sort', '-s', is_flag=True, default=False)
-def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
+def add_data_methods(test_case_cls_import, data_cls_import, geomstats_repo_dir,
                      tests_loc, sort):
     """Add missing data methods for `vec` and `random`.
     """
@@ -137,7 +141,7 @@ def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
     )
 
     out = add_missing_data_methods(
-        test_cls_import,
+        test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
@@ -151,7 +155,7 @@ def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
     msg = "Updated"
     if sort:
         sort_data_methods_(
-            test_cls_import,
+            test_case_cls_import,
             data_cls_import=data_cls_import,
             geomstats_repo_dir=geomstats_repo_dir,
             tests_loc=tests_loc
@@ -165,16 +169,16 @@ def add_data_methods(test_cls_import, data_cls_import, geomstats_repo_dir,
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
 @add_options([
-    _test_cls_import_option,
+    _test_case_cls_import_option,
     _data_cls_import_option,
     _geomstats_repo_dir_option,
     _tests_loc_option,
 ])
 @click.option('--update-data', '-u', is_flag=True, default=False)
 @click.option('--sort', '-s', is_flag=True, default=False)
-def add_test_methods(cls_import, test_cls_import, data_cls_import, geomstats_repo_dir,
+def add_test_methods(cls_import, test_case_cls_import, data_cls_import, geomstats_repo_dir,
                      tests_loc, update_data, sort):
-    """Adds missing test methods.
+    """Add missing test methods.
 
     Notes
     -----
@@ -190,13 +194,15 @@ def add_test_methods(cls_import, test_cls_import, data_cls_import, geomstats_rep
 
     out = add_missing_test_methods(
         cls_import,
-        test_cls_import=test_cls_import,
+        test_case_cls_import=test_case_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
     )
-    if out is None:
-        print("No missing methods")
 
-    test_path, test_cls_import, test_cls_name = out
+    if out is None:
+        print("No missing test case methods.")
+        return
+
+    test_path, test_case_cls_import, test_cls_name = out
     msg = f"Updated `{test_cls_name}` in `{test_path}`"
 
     if not update_data:
@@ -205,7 +211,7 @@ def add_test_methods(cls_import, test_cls_import, data_cls_import, geomstats_rep
         return
 
     out = add_missing_data_methods(
-        test_cls_import,
+        test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc
@@ -221,7 +227,7 @@ def add_test_methods(cls_import, test_cls_import, data_cls_import, geomstats_rep
 
     if sort:
         sort_data_methods_(
-            test_cls_import,
+            test_case_cls_import,
             data_cls_import=data_cls_import,
             geomstats_repo_dir=geomstats_repo_dir,
             tests_loc=tests_loc

@@ -55,6 +55,6 @@ def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
     return classes
 
 
-def get_class_given_import(cls_import, visitor_type="basic"):
+def get_class_given_import(cls_import, visitor_type="basic", packages_dir=None):
     return get_classes_given_imports(
-        [cls_import], visitor_type=visitor_type)[0]
+        [cls_import], visitor_type=visitor_type, packages_dir=packages_dir)[0]

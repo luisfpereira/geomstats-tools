@@ -1,8 +1,20 @@
 
 
-def get_test_cls_import_default(cls_import):
+def get_test_case_cls_import(cls_import, is_abstract=False):
     cls_import_ls = cls_import.split('.')
-    return f"{cls_import_ls[0]}.test.{'.'.join(cls_import_ls[1:])}TestCase"
+
+    import_ = f"{cls_import_ls[0]}.test."
+    if is_abstract:
+        import_ += f"{'.'.join(cls_import_ls[1:-2])}.base.{cls_import_ls[-1]}"
+    else:
+        import_ += ".".join(cls_import_ls[1:])
+
+    import_ += "TestCase"
+    return import_
+
+
+def get_test_case_cls_import_from_class(class_):
+    return get_test_case_cls_import(class_.long_name, class_.is_abstract)
 
 
 def get_data_cls_name(cls_name):
