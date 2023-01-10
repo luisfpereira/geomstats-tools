@@ -1,5 +1,3 @@
-
-
 from geomstats_tools.calatrava_utils import collect_imports
 from geomstats_tools.str_utils import TAB
 
@@ -8,13 +6,13 @@ from geomstats_tools.str_utils import TAB
 
 
 def get_source(path):
-    with open(path, 'r') as file:
+    with open(path, "r") as file:
         source = file.readlines()
     return source
 
 
 def write_source(path, source_ls):
-    with open(path, 'w') as file:
+    with open(path, "w") as file:
         file.writelines(source_ls)
 
 
@@ -29,7 +27,7 @@ def find_class_lims(class_name, source):
             to_break = True
             continue
 
-        if to_break and not line.strip() == "" and not line.startswith(' '):
+        if to_break and not line.strip() == "" and not line.startswith(" "):
             end_line = i
             break
 
@@ -51,7 +49,7 @@ def _is_function_def_start(line, indentation):
 
 def _get_function_name_from_def(line):
     line = line.strip()
-    return line[4:line.index("(")]
+    return line[4 : line.index("(")]
 
 
 def split_class(class_source):
@@ -105,7 +103,7 @@ def from_cls_dict_to_list(cls_dict):
             lines_ = lines_.splitlines(True)
 
         if lines and lines[-1] != "\n":
-            lines_.append('\n')
+            lines_.append("\n")
         lines.extend(lines_)
 
     return lines
@@ -119,7 +117,7 @@ def add_updated_cls_to_source(source, cls_source, start_line, end_line):
     source_.extend(cls_source)
     source_.extend(source[end_line:])
 
-    source.append('\n')
+    source.append("\n")
     return source_
 
 
@@ -132,7 +130,8 @@ def add_methods_to_class_given_source(source_ls, class_name, methods_dict):
     new_cls_source = from_cls_dict_to_list(cls_dict)
 
     new_source_ls = add_updated_cls_to_source(
-        source_ls, new_cls_source, start_line, end_line)
+        source_ls, new_cls_source, start_line, end_line
+    )
 
     return new_source_ls
 
@@ -140,13 +139,24 @@ def add_methods_to_class_given_source(source_ls, class_name, methods_dict):
 def find_last_import_line(source_ls):
     last_line = 0
     for line_num, line in enumerate(source_ls):
-        if any(line.startswith(str_) for str_ in [
-            "from", "import", ")",
-        ]):
+        if any(
+            line.startswith(str_)
+            for str_ in [
+                "from",
+                "import",
+                ")",
+            ]
+        ):
             last_line = line_num
-        elif not any(line.startswith(str_) for str_ in [
-            "\n", "#", '"', "'",
-        ]):
+        elif not any(
+            line.startswith(str_)
+            for str_ in [
+                "\n",
+                "#",
+                '"',
+                "'",
+            ]
+        ):
             break
 
     return last_line
@@ -156,7 +166,7 @@ def _manipulate_imports(imports_ls):
     # TODO: import pytest and pytest.something case is not captured
     imports_ = []
     for import_ in imports_ls:
-        import_ls = import_.split('.')
+        import_ls = import_.split(".")
         if len(import_ls) == 1:
             imports_.append((import_ls[0], None))
         else:
@@ -188,7 +198,7 @@ def _write_imports_snippet_ls(imports_ls):
             code.append(f"from {key} import (\n")
             for value in values:
                 code.append(f"{TAB}{value},\n")
-            code.append(')\n')
+            code.append(")\n")
 
     return code
 
@@ -196,10 +206,9 @@ def _write_imports_snippet_ls(imports_ls):
 def add_imports_to_source(source_ls, imports):
     # TODO: maybe use isort here?
 
-    existing_imports = collect_imports('\n'.join(source_ls))
+    existing_imports = collect_imports("\n".join(source_ls))
 
-    imports_to_add = [import_ for import_ in imports
-                      if import_ not in existing_imports]
+    imports_to_add = [import_ for import_ in imports if import_ not in existing_imports]
 
     if len(imports_to_add) == 0:
         return source_ls
@@ -207,9 +216,9 @@ def add_imports_to_source(source_ls, imports):
     code_ls = _write_imports_snippet_ls(imports_to_add)
 
     last_import_line = find_last_import_line(source_ls)
-    new_source_ls = source_ls[:last_import_line + 1]
+    new_source_ls = source_ls[: last_import_line + 1]
     new_source_ls.append("\n")
     new_source_ls.extend(code_ls)
-    new_source_ls.extend(source_ls[last_import_line + 1:])
+    new_source_ls.extend(source_ls[last_import_line + 1 :])
 
     return new_source_ls

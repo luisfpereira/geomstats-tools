@@ -2,7 +2,7 @@ import os
 
 
 def get_test_case_cls_import(cls_import, is_abstract=False):
-    cls_import_ls = cls_import.split('.')
+    cls_import_ls = cls_import.split(".")
 
     import_ = f"{cls_import_ls[0]}.test."
     if is_abstract:
@@ -19,7 +19,7 @@ def get_test_case_cls_import_from_class(class_):
 
 
 def get_test_data_cls_import(tests_loc, cls_import, is_abstract=False):
-    cls_import_ls = cls_import.split('.')
+    cls_import_ls = cls_import.split(".")
 
     import_ = f"{tests_loc}.data."
     if is_abstract:
@@ -46,7 +46,7 @@ def get_data_cls_name(cls_name):
 
 
 def get_test_data_loc(cls_import, tests_loc):
-    cls_import_ls = cls_import.split('.')
+    cls_import_ls = cls_import.split(".")
 
     cls_name = cls_import_ls[-1]
     module_name = cls_import_ls[-2]
@@ -62,7 +62,7 @@ def get_test_cls_name(cls_name):
 
 
 def get_test_loc(cls_import, tests_loc):
-    cls_import_ls = cls_import.split('.')
+    cls_import_ls = cls_import.split(".")
 
     cls_name = cls_import_ls[-1]
     module_name = cls_import_ls[-2]
@@ -73,8 +73,8 @@ def get_test_loc(cls_import, tests_loc):
 
 
 def get_module_and_cls_from_import(cls_import):
-    data_cls_import_ls = cls_import.split('.')
-    module_import = '.'.join(data_cls_import_ls[:-1])
+    data_cls_import_ls = cls_import.split(".")
+    module_import = ".".join(data_cls_import_ls[:-1])
     cls_name = data_cls_import_ls[-1]
 
     return module_import, cls_name
@@ -105,9 +105,9 @@ def has_vec_test(method_name, tests_names):
 
 
 def cls_import_to_filename(cls_import):
-    cls_import_ls = cls_import.split('.')
-    return f"{os.path.sep}".join(cls_import_ls[:-1]) + '.py'
+    cls_import_ls = cls_import.split(".")
+    return f"{os.path.sep}".join(cls_import_ls[:-1]) + ".py"
 
 
 def module_import_to_filename(module_import):
-    return module_import.replace('.', os.path.sep) + ".py"
+    return module_import.replace(".", os.path.sep) + ".py"

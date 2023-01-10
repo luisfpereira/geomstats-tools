@@ -1,10 +1,10 @@
 from geomstats_tools.naming_utils import (
     has_direct_test,
-    has_vec_test
+    has_vec_test,
 )
 from geomstats_tools.str_utils import (
     TAB,
-    VERIFICATION_MSG
+    VERIFICATION_MSG,
 )
 
 
@@ -36,8 +36,7 @@ def _write_direct_test_snippet(method, level=1):
     code += TAB * fnc_lvl + "res = self.space.{func_name}({args_list})\n"
     code += f"{TAB*fnc_lvl}self.assertAllClose(res, expected, atol=atol)\n"
 
-    return code.format(
-        func_name=method.short_name, args_list=", ".join(args))
+    return code.format(func_name=method.short_name, args_list=", ".join(args))
 
 
 def _base_point_snippet(arg_name, level=2):
@@ -69,11 +68,16 @@ def _write_generate_vec_snippet(args, level=2):
 
     code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
-    kw_args = ', '.join([f"{arg}={arg}" for arg in args])
+    kw_args = ", ".join([f"{arg}={arg}" for arg in args])
     code += f"{TAB*arg_lvl}data=dict({kw_args}, expected=expected, atol=atol),\n"
 
-    vec_arg_names = ", ".join([f'"{arg}"' for arg in args
-                               if arg.startswith("tangent_vec") or arg.endswith("point")])
+    vec_arg_names = ", ".join(
+        [
+            f'"{arg}"'
+            for arg in args
+            if arg.startswith("tangent_vec") or arg.endswith("point")
+        ]
+    )
     code += f"{TAB*arg_lvl}arg_names=[{vec_arg_names}],\n"
 
     code += f'{TAB*arg_lvl}expected_name="expected",\n'
@@ -118,10 +122,10 @@ def write_test_method_snippets(method, has_direct_test_, has_vec_test_):
 
 
 def get_missing_imports(source_ls):
-    source = ''.join(source_ls)
+    source = "".join(source_ls)
     imports = [
         "geomstats.test.vectorization.generate_vectorization_data",
-        "geomstats.test.random.get_random_tangent_vec"
+        "geomstats.test.random.get_random_tangent_vec",
     ]
 
     imports_ = []

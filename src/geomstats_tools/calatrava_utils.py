@@ -1,10 +1,9 @@
-
 import ast
 
 from calatrava.parser.ast.find_imports import Module as ImportsModule
 from calatrava.parser.ast.uml import (
     Package,
-    PackageManager
+    PackageManager,
 )
 
 # TODO: move filters to calatrava
@@ -12,8 +11,7 @@ from calatrava.parser.ast.uml import (
 
 
 def keep_only_public_methods(methods):
-    return [method for method in methods
-            if method.is_public and not method.is_setter]
+    return [method for method in methods if method.is_public and not method.is_setter]
 
 
 def remove_repeated_methods(methods):
@@ -38,8 +36,10 @@ def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
     if packages_dir is None:
         packages = [Package("geomstats", classes_visitor=visitor_type)]
     else:
-        packages = [Package(package_dir, classes_visitor=visitor_type)
-                    for package_dir in packages_dir]
+        packages = [
+            Package(package_dir, classes_visitor=visitor_type)
+            for package_dir in packages_dir
+        ]
 
     package_manager = PackageManager(packages)
 
@@ -60,7 +60,8 @@ def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
 
 def get_class_given_import(cls_import, visitor_type="basic", packages_dir=None):
     return get_classes_given_imports(
-        [cls_import], visitor_type=visitor_type, packages_dir=packages_dir)[0]
+        [cls_import], visitor_type=visitor_type, packages_dir=packages_dir
+    )[0]
 
 
 def class_is_defined(cls_import, package_dir):

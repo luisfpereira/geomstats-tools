@@ -4,7 +4,7 @@ from geomstats_tools.config_utils import load_from_config
 from geomstats_tools.naming_utils import (
     get_module_and_cls_from_import,
     get_test_case_cls_import_from_class,
-    get_test_data_loc
+    get_test_data_loc,
 )
 
 
@@ -33,6 +33,8 @@ def get_info_from_data_import(cls_import, data_cls_import, tests_loc):
     if data_cls_import is None:
         data_module_import, data_cls_name = get_test_data_loc(cls_import, tests_loc)
     else:
-        data_module_import, data_cls_name = get_module_and_cls_from_import(data_cls_import)
+        data_module_import, data_cls_name = get_module_and_cls_from_import(
+            data_cls_import
+        )
 
     return data_module_import, data_cls_name

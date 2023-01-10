@@ -1,4 +1,3 @@
-
 import os
 
 from geomstats_tools.calatrava_utils import class_is_defined
@@ -6,12 +5,12 @@ from geomstats_tools.naming_utils import (
     cls_import_to_filename,
     get_test_case_cls_import_from_class,
     get_test_data_cls_import_from_class,
-    module_import_to_filename
+    module_import_to_filename,
 )
 from geomstats_tools.parsing_utils import add_imports_to_source
 from geomstats_tools.str_utils import (
     TAB,
-    VERIFICATION_MSG
+    VERIFICATION_MSG,
 )
 
 
@@ -38,7 +37,7 @@ def get_test_case_imports(class_):
 def write_test_case_snippet(class_, class_test_case, level=0):
     cls_lvl = level + 1
 
-    base_classes_test_cases = ', '.join(_from_class_to_base_test_cases_names(class_))
+    base_classes_test_cases = ", ".join(_from_class_to_base_test_cases_names(class_))
 
     code = f"{TAB * level}class {class_test_case}({base_classes_test_cases}):\n"
     code += f"{TAB*cls_lvl}pass\n"
@@ -46,8 +45,12 @@ def write_test_case_snippet(class_, class_test_case, level=0):
     return code
 
 
-def get_test_imports(class_cls_import, test_case_cls_import, data_cls_import,
-                     parametrizer="DataBasedParametrizer"):
+def get_test_imports(
+    class_cls_import,
+    test_case_cls_import,
+    data_cls_import,
+    parametrizer="DataBasedParametrizer",
+):
     imports = [
         "random",
         "pytest",
@@ -80,14 +83,20 @@ def _write_fixture_example(class_name, fixture_name="spaces", level=0):
     return code
 
 
-def _write_test_snippet(fixture_name, test_cls_name, test_case_cls_name,
-                        data_cls_name,
-                        parametrizer="DataBasedParametrizer", level=0):
+def _write_test_snippet(
+    fixture_name,
+    test_cls_name,
+    test_case_cls_name,
+    data_cls_name,
+    parametrizer="DataBasedParametrizer",
+    level=0,
+):
     cls_lvl = level + 1
 
     code = (
         f'{TAB*level}@pytest.mark.usefixtures("{fixture_name}")\n'
-        f"{TAB*level}class {test_cls_name}({test_case_cls_name}, metaclass={parametrizer}):\n"
+        f"{TAB*level}class {test_cls_name}({test_case_cls_name},"
+        f" metaclass={parametrizer}):\n"
         f"{TAB*cls_lvl}testing_data = {data_cls_name}()\n\n"
     )
     return code
@@ -96,25 +105,27 @@ def _write_test_snippet(fixture_name, test_cls_name, test_case_cls_name,
 def write_test_snippet(class_, test_cls_name, test_case_cls_name, data_cls_name):
     fixture_name = "spaces"
     code = _write_fixture_example(class_.short_name, fixture_name)
-    code += _write_test_snippet(fixture_name, test_cls_name, test_case_cls_name,
-                                data_cls_name)
+    code += _write_test_snippet(
+        fixture_name, test_cls_name, test_case_cls_name, data_cls_name
+    )
 
     return code
 
 
 def get_data_imports(tests_loc, class_):
-    return [get_test_data_cls_import_from_class(tests_loc, base) for base in class_.bases]
+    return [
+        get_test_data_cls_import_from_class(tests_loc, base) for base in class_.bases
+    ]
 
 
 def write_test_data_snippet(class_, data_cls_name, level=0):
     cls_lvl = level + 1
 
-    base_classes_test_data = ', '.join(_from_class_to_base_test_data_names(class_))
+    base_classes_test_data = ", ".join(_from_class_to_base_test_data_names(class_))
 
     code = (
         f"{TAB*level}class {data_cls_name}({base_classes_test_data}):\n"
         f"{TAB*cls_lvl}pass\n\n"
-
     )
 
     return code
@@ -128,14 +139,11 @@ def get_path_from_cls_import(cls_import, repo_dir):
 
 
 def get_path_from_module_import(module_import, repo_dir):
-    return os.path.join(
-        repo_dir,
-        module_import_to_filename(module_import)
-    )
+    return os.path.join(repo_dir, module_import_to_filename(module_import))
 
 
 def _write_to_file(path, source_ls):
-    with open(path, 'w') as file:
+    with open(path, "w") as file:
         file.writelines(source_ls)
 
 
@@ -144,14 +152,14 @@ def write_to_file(path, code_snippet, imports=()):
     if os.path.exists(path):
         code_snippet = f"\n\n{code_snippet}"
 
-        with open(path, 'r') as file:
+        with open(path, "r") as file:
             source_ls = file.readlines()
     else:
         source_ls = []
 
     source_ls.extend(code_snippet.splitlines(True))
 
-    if source_ls[-1] == '\n':
+    if source_ls[-1] == "\n":
         # writelines adds extra unwanted line
         source_ls = source_ls[:-1]
 

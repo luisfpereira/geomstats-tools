@@ -1,4 +1,3 @@
-
 from geomstats_tools.naming_utils import has_direct_test
 
 
@@ -25,8 +24,7 @@ def collect_info_tests(methods_names, test_names):
         if has_direct_test_:
             direct_tests.append(method_name)
 
-        related_tests_ = get_related_tests(
-            method_name, test_names)
+        related_tests_ = get_related_tests(method_name, test_names)
         if related_tests_:
             related_tests[method_name] = related_tests_
 
@@ -37,7 +35,6 @@ def collect_info_tests(methods_names, test_names):
 
 
 class Printer:
-
     def __init__(self, tab_spaces=2):
         self.tab_spaces = tab_spaces
 

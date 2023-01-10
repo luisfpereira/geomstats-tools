@@ -6,13 +6,11 @@ def identify_test_type(test_methods, missing_data_methods_names, markers):
     data_method_to_test_type = {}
     markers_set = set(markers)
     for data_method_name in missing_data_methods_names:
-        method = test_methods_by_name[
-            test_data_name_to_test_name(data_method_name)
-        ]
+        method = test_methods_by_name[test_data_name_to_test_name(data_method_name)]
         markers_intersect = markers_set.intersection(method.decorator_list)
         if markers_intersect:
-            marker, = markers_intersect
-            data_method_to_test_type[data_method_name] = marker.split('.')[-1]
+            (marker,) = markers_intersect
+            data_method_to_test_type[data_method_name] = marker.split(".")[-1]
 
     return data_method_to_test_type
 

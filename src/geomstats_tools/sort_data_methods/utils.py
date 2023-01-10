@@ -2,7 +2,7 @@ from geomstats_tools.parsing_utils import (
     add_updated_cls_to_source,
     find_class_lims,
     from_cls_dict_to_list,
-    split_class
+    split_class,
 )
 
 
@@ -35,6 +35,7 @@ def reorder_methods_given_source(source, class_name, methods_order):
     ordered_cls_source = from_cls_dict_to_list(cls_ordered_dict)
 
     new_source = add_updated_cls_to_source(
-        source, ordered_cls_source, start_line, end_line)
+        source, ordered_cls_source, start_line, end_line
+    )
 
     return new_source
