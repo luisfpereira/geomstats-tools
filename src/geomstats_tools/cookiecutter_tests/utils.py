@@ -1,103 +1,155 @@
 
 import os
-import pathlib
 
-
-DEFAULT_TEMPLATE_DIR = os.path.join(
-    pathlib.Path(__file__).parent.resolve(),
-    "template",
+from geomstats_tools.naming_utils import (
+    get_test_case_cls_import_from_class,
+    get_test_data_cls_import_from_class,
+    cls_import_to_filename,
+    module_import_to_filename,
 )
+from geomstats_tools.parsing_utils import add_imports_to_source
+from geomstats_tools.str_utils import VERIFICATION_MSG, TAB
 
 
-def get_base_class_names(class_):
-    return [base_class.name for base_class in class_.bases]
+def _from_class_to_test_case_name(class_):
+    return f"{class_.short_name.replace(' ', '')}TestCase"
 
 
-def get_placeholders(cls_import, base_names):
-    cls_import_ls = cls_import.split(".")
-    class_name = cls_import_ls[-1]
-    if class_name.startswith('_'):
-        class_name = class_name[1:]
-
-    placeholders = {
-        "class_name": class_name,
-        "class_full_import": ".".join(cls_import_ls[:-1]),
-        "class_test_import": "geomstats.test." + ".".join(cls_import_ls[1:-1]),
-        "class_short_filename": cls_import_ls[-2],
-        "base_classes_test_cases": ", ".join([f"{base_name}TestCase" for base_name in base_names]),
-        "base_classes_test_data": ", ".join([f"{base_name}TestData" for base_name in base_names]),
-    }
-
-    return placeholders
+def _from_class_to_base_test_cases_names(class_):
+    return [_from_class_to_test_case_name(base_class) for base_class in class_.bases]
 
 
-def read_file(template_dir, short_filename):
-    filename = os.path.join(template_dir, short_filename)
-    with open(filename, "r") as file:
-        code_str = file.read()
-
-    return code_str
+def _from_class_to_test_data_name(class_):
+    return f"{class_.short_name.replace(' ', '')}TestData"
 
 
-def update_code_str(code_str, placeholders):
-    for placeholder_name, value in placeholders.items():
-        code_str = code_str.replace(f"`{placeholder_name}`", value)
-
-    return code_str
+def _from_class_to_base_test_data_names(class_):
+    return [_from_class_to_test_data_name(base_class) for base_class in class_.bases]
 
 
-def get_updated_code(placeholders, short_filename, template_dir):
-    code_str = read_file(template_dir, short_filename)
-    return update_code_str(code_str, placeholders)
+def get_test_case_imports(class_):
+    return [get_test_case_cls_import_from_class(base) for base in class_.bases]
 
 
-def update_filename(class_short_filename, short_filename):
-    return short_filename.replace("class_short_filename", class_short_filename)
+def write_test_case_snippet(class_, class_test_case, level=0):
+    cls_lvl = level + 1
+
+    base_classes_test_cases = ', '.join(_from_class_to_base_test_cases_names(class_))
+
+    code = f"{TAB * level}class {class_test_case}({base_classes_test_cases}):\n"
+    code += f"{TAB*cls_lvl}pass\n"
+
+    return code
 
 
-def get_updated_codes(placeholders, short_filenames, template_dir=DEFAULT_TEMPLATE_DIR):
-    codes = {}
-    for short_filename in short_filenames:
-        code_str = get_updated_code(placeholders, short_filename, template_dir)
+def get_test_imports(class_cls_import, test_case_cls_import, data_cls_import,
+                     parametrizer="DataBasedParametrizer"):
+    imports = [
+        "random",
+        "pytest",
+        class_cls_import,
+        test_case_cls_import,
+        f"geomstats.test.parametrizers.{parametrizer}",
+        data_cls_import,
+    ]
 
-        new_filename = update_filename(placeholders["class_short_filename"], short_filename)
-        codes[new_filename] = code_str
-
-    return codes
+    return imports
 
 
-def output_to_file(path, code):
+def _write_fixture_example(class_name, fixture_name="spaces", level=0):
+    fnc_lvl = level + 1
+    params_lvl = fnc_lvl + 1
+
+    code = (
+        f"{TAB*level}@pytest.fixture(\n"
+        f'{TAB*(fnc_lvl)}scope="class",\n'
+        f"{TAB*(fnc_lvl)}params=[\n"
+        f"{TAB*params_lvl}2,\n"
+        f"{TAB*params_lvl}random.randint(3, 5),\n"
+        f"{TAB*fnc_lvl}],\n"
+        f"{TAB*level})\n"
+        f"{TAB*level}def {fixture_name}(request):\n"
+        f"{TAB*fnc_lvl}{VERIFICATION_MSG}\n"
+        f"{TAB*fnc_lvl}request.cls.space = {class_name}(request.param)\n\n\n"
+    )
+
+    return code
+
+
+def _write_test_snippet(fixture_name, test_cls_name, test_case_cls_name,
+                        data_cls_name,
+                        parametrizer="DataBasedParametrizer", level=0):
+    cls_lvl = level + 1
+
+    code = (
+        f'{TAB*level}@pytest.mark.usefixtures("{fixture_name}")\n'
+        f"{TAB*level}class {test_cls_name}({test_case_cls_name}, metaclass={parametrizer}):\n"
+        f"{TAB*cls_lvl}testing_data = {data_cls_name}()\n\n"
+    )
+    return code
+
+
+def write_test_snippet(class_, test_cls_name, test_case_cls_name, data_cls_name):
+    fixture_name = "spaces"
+    code = _write_fixture_example(class_.short_name, fixture_name)
+    code += _write_test_snippet(fixture_name, test_cls_name, test_case_cls_name,
+                                data_cls_name)
+
+    return code
+
+
+def get_data_imports(tests_loc, class_):
+    return [get_test_data_cls_import_from_class(tests_loc, base) for base in class_.bases]
+
+
+def write_test_data_snippet(class_, data_cls_name, level=0):
+    cls_lvl = level + 1
+
+    base_classes_test_data = ', '.join(_from_class_to_base_test_data_names(class_))
+
+    code = (
+        f"{TAB*level}class {data_cls_name}({base_classes_test_data}):\n"
+        f"{TAB*cls_lvl}pass\n\n"
+
+    )
+
+    return code
+
+
+def get_path_from_cls_import(cls_import, repo_dir):
+    return os.path.join(
+        repo_dir,
+        cls_import_to_filename(cls_import),
+    )
+
+
+def get_path_from_module_import(module_import, repo_dir):
+    return os.path.join(
+        repo_dir,
+        module_import_to_filename(module_import)
+    )
+
+
+def _write_to_file(path, source_ls):
+    with open(path, 'w') as file:
+        file.writelines(source_ls)
+
+
+def write_to_file(path, code_snippet, imports=()):
+    # TODO: imports may need to be used in other tools
     if os.path.exists(path):
-        code = f"\n\n{code}"
+        code_snippet = f"\n\n{code_snippet}"
 
-    with open(path, 'a') as file:
-        file.write(code)
+        with open(path, 'r') as file:
+            source_ls = file.readlines()
+    else:
+        source_ls = []
 
+    source_ls.extend(code_snippet.splitlines(True))
 
-def _map_file_to_dir(filename, cls_import):
-    tests_dir = "tests2"
-    if filename.startswith("test_"):
-        return os.path.join(tests_dir, "tests_geomstats", filename)
+    if not imports:
+        _write_to_file(path, source_ls)
+        return
 
-    if filename.endswith("_data.py"):
-        return os.path.join(tests_dir, "data", filename)
-
-    init_path = f"geomstats{os.path.sep}test{os.path.sep}" + f"{os.path.sep}".join(cls_import.split('.')[1:-2])
-    return os.path.join(init_path, filename)
-
-
-def output_to_files(codes, geomstats_repo_dir, cls_import):
-    paths_to_log = []
-    for filename, code in codes.items():
-        path_in_repo = _map_file_to_dir(filename, cls_import)
-        path = os.path.join(geomstats_repo_dir, path_in_repo)
-
-        paths_to_log.append(path_in_repo)
-
-        output_to_file(path, code)
-
-    msg = "Created or updated:"
-    for path in paths_to_log:
-        msg += f"\n\t-{path}"
-
-    print(msg)
+    new_source_ls = add_imports_to_source(source_ls, imports)
+    _write_to_file(path, new_source_ls)

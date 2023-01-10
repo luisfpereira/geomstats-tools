@@ -2,9 +2,7 @@ from geomstats_tools.naming_utils import (
     has_direct_test,
     has_vec_test,
 )
-
-
-TAB = " " * 4
+from geomstats_tools.str_utils import VERIFICATION_MSG, TAB
 
 
 def collect_methods_info(cls_methods, tested_methods_names):
@@ -23,9 +21,6 @@ def collect_methods_info(cls_methods, tested_methods_names):
             }
 
     return methods_info
-
-
-VERIFICATION_MSG = "# TODO: generated automatically. check if correct"
 
 
 def _write_direct_test_snippet(method, level=1):
@@ -72,7 +67,7 @@ def _write_generate_vec_snippet(args, level=2):
     code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
     kw_args = ', '.join([f"{arg}={arg}" for arg in args])
-    code += f"{TAB*arg_lvl}data = dict({kw_args}, expected=expect, atol=atol),\n"
+    code += f"{TAB*arg_lvl}data = dict({kw_args}, expected=expected, atol=atol),\n"
 
     vec_arg_names = ", ".join([f'"{arg}"' for arg in args
                                if arg.startswith("tangent_vec") or arg.endswith("point")])

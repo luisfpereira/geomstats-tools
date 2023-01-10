@@ -1,8 +1,11 @@
 
+import ast
+
 from calatrava.parser.ast.uml import (
     PackageManager,
     Package,
 )
+from calatrava.parser.ast.find_imports import Module as ImportsModule
 
 # TODO: move filters to calatrava
 # TODO: need to understand how to keep it consistent
@@ -58,3 +61,22 @@ def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
 def get_class_given_import(cls_import, visitor_type="basic", packages_dir=None):
     return get_classes_given_imports(
         [cls_import], visitor_type=visitor_type, packages_dir=packages_dir)[0]
+
+
+class _VirtualModule(ImportsModule):
+    def __init__(self, source):
+        self.source = source
+        super().__init__(long_name="", package=None)
+
+    def _load_root(self):
+        return ast.parse(self.source)
+
+    @property
+    def is_init(self):
+        return False
+
+
+def collect_imports(source):
+    module = _VirtualModule(source)
+
+    return module.get_imports()
