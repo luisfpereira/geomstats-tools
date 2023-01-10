@@ -63,6 +63,15 @@ def get_class_given_import(cls_import, visitor_type="basic", packages_dir=None):
         [cls_import], visitor_type=visitor_type, packages_dir=packages_dir)[0]
 
 
+def class_is_defined(cls_import, package_dir):
+    package = Package(package_dir, classes_visitor="basic")
+    package_manager = PackageManager([package])
+
+    package_manager.find(cls_import)
+    class_ = package_manager.get_classes()[cls_import]
+    return class_.found
+
+
 class _VirtualModule(ImportsModule):
     def __init__(self, source):
         self.source = source

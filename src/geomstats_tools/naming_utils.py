@@ -67,7 +67,7 @@ def get_test_loc(cls_import, tests_loc):
     cls_name = cls_import_ls[-1]
     module_name = cls_import_ls[-2]
 
-    test_cls_name = get_data_cls_name(cls_name)
+    test_cls_name = get_test_cls_name(cls_name)
 
     return f"{tests_loc}.tests_geomstats.test_{module_name}", test_cls_name
 

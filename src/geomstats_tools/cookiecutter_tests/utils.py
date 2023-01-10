@@ -1,6 +1,7 @@
 
 import os
 
+from geomstats_tools.calatrava_utils import class_is_defined
 from geomstats_tools.naming_utils import (
     get_test_case_cls_import_from_class,
     get_test_data_cls_import_from_class,
@@ -153,3 +154,10 @@ def write_to_file(path, code_snippet, imports=()):
 
     new_source_ls = add_imports_to_source(source_ls, imports)
     _write_to_file(path, new_source_ls)
+
+
+def cls_already_exists(path, cls_import, package_dir):
+    if not os.path.exists(path):
+        return False
+
+    return class_is_defined(cls_import, package_dir)
