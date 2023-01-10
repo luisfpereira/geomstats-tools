@@ -2,9 +2,9 @@ import functools
 
 from geomstats_tools.config_utils import load_from_config
 from geomstats_tools.naming_utils import (
-    get_test_data_loc,
     get_module_and_cls_from_import,
     get_test_case_cls_import_from_class,
+    get_test_data_loc
 )
 
 

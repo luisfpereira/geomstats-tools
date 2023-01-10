@@ -1,24 +1,24 @@
 import os
 
 from geomstats_tools.args_manip import (
-    update_geomstats_repo_dir,
     get_info_from_data_import,
-    update_test_case_cls_import,
+    update_geomstats_repo_dir,
+    update_test_case_cls_import
 )
-
 from geomstats_tools.calatrava_utils import get_class_given_import
 from geomstats_tools.naming_utils import get_test_loc
+
 from .utils import (
-    write_test_case_snippet,
-    write_test_snippet,
-    write_test_data_snippet,
-    get_test_case_imports,
-    get_test_imports,
+    cls_already_exists,
     get_data_imports,
     get_path_from_cls_import,
     get_path_from_module_import,
-    write_to_file,
-    cls_already_exists,
+    get_test_case_imports,
+    get_test_imports,
+    write_test_case_snippet,
+    write_test_data_snippet,
+    write_test_snippet,
+    write_to_file
 )
 
 

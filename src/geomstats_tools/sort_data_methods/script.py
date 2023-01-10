@@ -1,16 +1,16 @@
 import os
 
+from geomstats_tools.args_manip import (
+    get_info_from_data_import,
+    update_geomstats_repo_dir
+)
 from geomstats_tools.calatrava_utils import get_class_given_import
 from geomstats_tools.parsing_utils import (
     get_source,
-    write_source,
+    write_source
 )
-from geomstats_tools.args_manip import (
-    update_geomstats_repo_dir,
-    get_info_from_data_import,
-)
-from .utils import reorder_methods_given_source
 
+from .utils import reorder_methods_given_source
 
 # TODO: do this in batch
 

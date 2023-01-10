@@ -1,32 +1,33 @@
 
 import os
 
-from geomstats_tools.calatrava_utils import (
-    get_class_given_import,
-    remove_repeated_methods,
-    remove_properties,
-    keep_only_public_methods,
-    keep_only_newly_defined_methods,
-)
 from geomstats_tools.args_manip import (
     update_geomstats_repo_dir,
-    update_test_case_cls_import,
+    update_test_case_cls_import
+)
+from geomstats_tools.calatrava_utils import (
+    get_class_given_import,
+    keep_only_newly_defined_methods,
+    keep_only_public_methods,
+    remove_properties,
+    remove_repeated_methods
 )
 from geomstats_tools.naming_utils import (
     get_module_and_cls_from_import,
     is_test,
-    module_import_to_filename,
+    module_import_to_filename
 )
 from geomstats_tools.parsing_utils import (
-    get_source,
-    write_source,
-    add_methods_to_class_given_source,
     add_imports_to_source,
+    add_methods_to_class_given_source,
+    get_source,
+    write_source
 )
+
 from .utils import (
     collect_methods_info,
-    write_test_method_snippets,
     get_missing_imports,
+    write_test_method_snippets
 )
 
 

@@ -1,20 +1,20 @@
 
 import os
 
+from geomstats_tools.args_manip import (
+    update_geomstats_repo_dir,
+    update_test_case_cls_import
+)
 from geomstats_tools.calatrava_utils import (
     get_class_given_import,
     keep_only_public_methods,
-    remove_repeated_methods,
-)
-from geomstats_tools.args_manip import (
-    update_geomstats_repo_dir,
-    update_test_case_cls_import,
+    remove_repeated_methods
 )
 from geomstats_tools.naming_utils import is_test
 
 from .utils import (
-    collect_info_tests,
     Printer,
+    collect_info_tests
 )
 
 

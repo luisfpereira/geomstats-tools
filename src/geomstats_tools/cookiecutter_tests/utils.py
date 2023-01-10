@@ -3,13 +3,16 @@ import os
 
 from geomstats_tools.calatrava_utils import class_is_defined
 from geomstats_tools.naming_utils import (
+    cls_import_to_filename,
     get_test_case_cls_import_from_class,
     get_test_data_cls_import_from_class,
-    cls_import_to_filename,
-    module_import_to_filename,
+    module_import_to_filename
 )
 from geomstats_tools.parsing_utils import add_imports_to_source
-from geomstats_tools.str_utils import VERIFICATION_MSG, TAB
+from geomstats_tools.str_utils import (
+    TAB,
+    VERIFICATION_MSG
+)
 
 
 def _from_class_to_test_case_name(class_):

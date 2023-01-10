@@ -1,6 +1,6 @@
 from geomstats_tools.naming_utils import (
     is_test,
-    test_name_to_test_data_name,
+    test_name_to_test_data_name
 )
 
 
@@ -27,7 +27,7 @@ def get_missing_data_methods_names(test_methods, data_methods):
     required_data_methods_names = [test_name_to_test_data_name(name)
                                    for name in test_methods_names]
 
-    data_methods_names = set([method.short_name for method in data_methods])
+    data_methods_names = {method.short_name for method in data_methods}
     missing_methods_names = []
     for method_name in required_data_methods_names:
         if method_name in data_methods_names:

@@ -1,8 +1,8 @@
 from geomstats_tools.parsing_utils import (
-    find_class_lims,
-    split_class,
-    from_cls_dict_to_list,
     add_updated_cls_to_source,
+    find_class_lims,
+    from_cls_dict_to_list,
+    split_class
 )
 
 

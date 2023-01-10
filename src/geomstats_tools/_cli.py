@@ -54,12 +54,11 @@ def create_test(cls_import, test_cls_name, test_case_cls_import,
                 data_cls_import, geomstats_repo_dir, tests_loc, basic):
     """Create the required objects to test a new class.
     """
+    from geomstats_tools.add_data_methods import add_missing_data_methods
     from geomstats_tools.add_test_methods import add_missing_test_methods
     from geomstats_tools.cookiecutter_tests import create_test as create_test_
-    from geomstats_tools.add_data_methods import add_missing_data_methods
-    from geomstats_tools.sort_data_methods import (
-        sort_data_methods as sort_data_methods_,
-    )
+    from geomstats_tools.sort_data_methods import \
+        sort_data_methods as sort_data_methods_
 
     out = create_test_(
         cls_import,
@@ -70,7 +69,7 @@ def create_test(cls_import, test_cls_name, test_case_cls_import,
         tests_loc=tests_loc,
     )
 
-    if all([not out_[1] for out_ in out]):
+    if all(not out_[1] for out_ in out):
         print("Everything already exists.")
         return
 
@@ -102,12 +101,12 @@ def create_test(cls_import, test_cls_name, test_case_cls_import,
             tests_loc=tests_loc
         )
 
-        # sort_data_methods_(
-        #     test_case_cls_import_,
-        #     data_cls_import=data_cls_import_,
-        #     geomstats_repo_dir=geomstats_repo_dir,
-        #     tests_loc=tests_loc
-        # )
+        sort_data_methods_(
+            test_case_cls_import_,
+            data_cls_import=data_cls_import_,
+            geomstats_repo_dir=geomstats_repo_dir,
+            tests_loc=tests_loc
+        )
 
 
 @main_cli.command()
@@ -136,9 +135,8 @@ def sort_data_methods(test_case_cls_import, data_cls_import, geomstats_repo_dir,
     -----
     * Inherited methods are ignored.
     """
-    from geomstats_tools.sort_data_methods import (
-        sort_data_methods as sort_data_methods_,
-    )
+    from geomstats_tools.sort_data_methods import \
+        sort_data_methods as sort_data_methods_
     data_path, data_cls_name = sort_data_methods_(
         test_case_cls_import,
         data_cls_import=data_cls_import,
@@ -193,9 +191,8 @@ def add_data_methods(test_case_cls_import, data_cls_import, geomstats_repo_dir,
     """Add missing data methods for `vec` and `random`.
     """
     from geomstats_tools.add_data_methods import add_missing_data_methods
-    from geomstats_tools.sort_data_methods import (
-        sort_data_methods as sort_data_methods_,
-    )
+    from geomstats_tools.sort_data_methods import \
+        sort_data_methods as sort_data_methods_
 
     out = add_missing_data_methods(
         test_case_cls_import,
@@ -243,11 +240,10 @@ def add_test_methods(cls_import, test_case_cls_import, data_cls_import, geomstat
     * data can be updated if requested.
     * sorting can be done if requested.
     """
-    from geomstats_tools.add_test_methods import add_missing_test_methods
     from geomstats_tools.add_data_methods import add_missing_data_methods
-    from geomstats_tools.sort_data_methods import (
-        sort_data_methods as sort_data_methods_,
-    )
+    from geomstats_tools.add_test_methods import add_missing_test_methods
+    from geomstats_tools.sort_data_methods import \
+        sort_data_methods as sort_data_methods_
 
     out = add_missing_test_methods(
         cls_import,

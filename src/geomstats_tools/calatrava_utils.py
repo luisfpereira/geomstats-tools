@@ -1,11 +1,11 @@
 
 import ast
 
-from calatrava.parser.ast.uml import (
-    PackageManager,
-    Package,
-)
 from calatrava.parser.ast.find_imports import Module as ImportsModule
+from calatrava.parser.ast.uml import (
+    Package,
+    PackageManager
+)
 
 # TODO: move filters to calatrava
 # TODO: need to understand how to keep it consistent
@@ -26,7 +26,7 @@ def remove_repeated_methods(methods):
 
 
 def keep_only_newly_defined_methods(methods, base_methods):
-    base_methods_names = set([method.short_name for method in base_methods])
+    base_methods_names = {method.short_name for method in base_methods}
     return [method for method in methods if method.short_name not in base_methods_names]
 
 

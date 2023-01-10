@@ -1,14 +1,15 @@
 
 import os
 
-from geomstats_tools.calatrava_utils import get_classes_given_imports
 from geomstats_tools.args_manip import (
-    update_geomstats_repo_dir,
     get_info_from_data_import,
+    update_geomstats_repo_dir
 )
+from geomstats_tools.calatrava_utils import get_classes_given_imports
+
 from .utils import (
     get_missing_data_methods_names,
-    get_test_methods,
+    get_test_methods
 )
 
 DEFAULT_MARKERS = ('pytest.mark.vec', 'pytest.mark.random')

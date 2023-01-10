@@ -1,8 +1,11 @@
 from geomstats_tools.naming_utils import (
     has_direct_test,
-    has_vec_test,
+    has_vec_test
 )
-from geomstats_tools.str_utils import VERIFICATION_MSG, TAB
+from geomstats_tools.str_utils import (
+    TAB,
+    VERIFICATION_MSG
+)
 
 
 def collect_methods_info(cls_methods, tested_methods_names):
