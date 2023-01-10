@@ -11,6 +11,8 @@
 
 # TODO: be consistent with method names
 
+# TODO: create better messages
+
 
 import click
 
@@ -44,13 +46,68 @@ def main_cli():
 
 @main_cli.command()
 @click.argument('cls-import', nargs=1, type=str)
-@add_options([_geomstats_repo_dir_option])
-def cookiecutter_tests(cls_import, geomstats_repo_dir):
+@click.option('--test-cls-name', nargs=1, type=str)
+@add_options([_test_case_cls_import_option, _data_cls_import_option,
+              _geomstats_repo_dir_option, _tests_loc_option])
+@click.option('--basic', is_flag=True, default=False)
+def create_test(cls_import, test_cls_name, test_case_cls_import,
+                data_cls_import, geomstats_repo_dir, tests_loc, basic):
     """Create the required objects to test a new class.
     """
-    from geomstats_tools.cookiecutter_tests import create_test
+    from geomstats_tools.add_test_methods import add_missing_test_methods
+    from geomstats_tools.cookiecutter_tests import create_test as create_test_
+    from geomstats_tools.add_data_methods import add_missing_data_methods
+    from geomstats_tools.sort_data_methods import (
+        sort_data_methods as sort_data_methods_,
+    )
 
-    create_test(cls_import, geomstats_repo_dir=geomstats_repo_dir)
+    out = create_test_(
+        cls_import,
+        test_cls_name=test_cls_name,
+        test_case_cls_import=test_case_cls_import,
+        data_cls_import=data_cls_import,
+        geomstats_repo_dir=geomstats_repo_dir,
+        tests_loc=tests_loc,
+    )
+
+    if all([not out_[1] for out_ in out]):
+        print("Everything already exists.")
+        return
+
+    msg = "Created:"
+    for out_ in out:
+        if out_[1]:
+            msg += f"\n  -{out_[0]}"
+    print(msg)
+
+    if basic:
+        return
+
+    test_case_cls_import_ = out[0][0]
+    data_cls_import_ = out[1][0]
+
+    if out[0][1]:
+        add_missing_test_methods(
+            cls_import,
+            test_case_cls_import=test_case_cls_import_,
+            geomstats_repo_dir=geomstats_repo_dir,
+        )
+
+    if out[1][1]:
+
+        add_missing_data_methods(
+            test_case_cls_import_,
+            data_cls_import=data_cls_import_,
+            geomstats_repo_dir=geomstats_repo_dir,
+            tests_loc=tests_loc
+        )
+
+        # sort_data_methods_(
+        #     test_case_cls_import_,
+        #     data_cls_import=data_cls_import_,
+        #     geomstats_repo_dir=geomstats_repo_dir,
+        #     tests_loc=tests_loc
+        # )
 
 
 @main_cli.command()

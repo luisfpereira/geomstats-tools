@@ -148,11 +148,16 @@ def write_to_file(path, code_snippet, imports=()):
 
     source_ls.extend(code_snippet.splitlines(True))
 
+    if source_ls[-1] == '\n':
+        # writelines adds extra unwanted line
+        source_ls = source_ls[:-1]
+
     if not imports:
         _write_to_file(path, source_ls)
         return
 
     new_source_ls = add_imports_to_source(source_ls, imports)
+
     _write_to_file(path, new_source_ls)
 
 
