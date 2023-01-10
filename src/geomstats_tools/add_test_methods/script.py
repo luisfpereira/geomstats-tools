@@ -15,15 +15,18 @@ from geomstats_tools.args_manip import (
 from geomstats_tools.naming_utils import (
     get_module_and_cls_from_import,
     is_test,
+    module_import_to_filename,
 )
 from geomstats_tools.parsing_utils import (
     get_source,
     write_source,
     add_methods_to_class_given_source,
+    add_imports_to_source,
 )
 from .utils import (
     collect_methods_info,
     write_test_method_snippets,
+    get_missing_imports,
 )
 
 
@@ -76,14 +79,17 @@ def add_missing_test_methods(cls_import, *, test_case_cls_import=None,
     # TODO: sintax sugar?
     test_module_import, test_cls_name = get_module_and_cls_from_import(
         test_case_cls_import)
-    test_filename = test_module_import.replace(".", os.path.sep) + '.py'
+    test_filename = module_import_to_filename(test_module_import)
     test_path = os.path.join(geomstats_repo_dir, test_filename)
-    source = get_source(test_path)
+    source_ls = get_source(test_path)
 
-    new_source = add_methods_to_class_given_source(
-        source, test_cls_name, code_snippets)
+    new_source_ls = add_methods_to_class_given_source(
+        source_ls, test_cls_name, code_snippets)
 
-    # TODO: missing imports
-    write_source(test_path, new_source)
+    imports = get_missing_imports(new_source_ls)
+    if len(imports) > 0:
+        new_source_ls = add_imports_to_source(new_source_ls, imports)
+
+    write_source(test_path, new_source_ls)
 
     return test_path, test_case_cls_import, test_cls_name

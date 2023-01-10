@@ -13,9 +13,9 @@ def get_source(path):
     return source
 
 
-def write_source(path, source):
+def write_source(path, source_ls):
     with open(path, 'w') as file:
-        file.writelines(source)
+        file.writelines(source_ls)
 
 
 def find_class_lims(class_name, source):
@@ -123,18 +123,18 @@ def add_updated_cls_to_source(source, cls_source, start_line, end_line):
     return source_
 
 
-def add_methods_to_class_given_source(source, class_name, methods_dict):
-    start_line, end_line = find_class_lims(class_name, source)
-    cls_source = source[start_line:end_line]
+def add_methods_to_class_given_source(source_ls, class_name, methods_dict):
+    start_line, end_line = find_class_lims(class_name, source_ls)
+    cls_source = source_ls[start_line:end_line]
 
     cls_dict = split_class(cls_source)
     cls_dict.update(methods_dict)
     new_cls_source = from_cls_dict_to_list(cls_dict)
 
-    new_source = add_updated_cls_to_source(
-        source, new_cls_source, start_line, end_line)
+    new_source_ls = add_updated_cls_to_source(
+        source_ls, new_cls_source, start_line, end_line)
 
-    return new_source
+    return new_source_ls
 
 
 def find_last_import_line(source_ls):

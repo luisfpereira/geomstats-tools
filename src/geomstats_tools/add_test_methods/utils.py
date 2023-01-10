@@ -67,7 +67,7 @@ def _write_generate_vec_snippet(args, level=2):
     code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
     kw_args = ', '.join([f"{arg}={arg}" for arg in args])
-    code += f"{TAB*arg_lvl}data = dict({kw_args}, expected=expected, atol=atol),\n"
+    code += f"{TAB*arg_lvl}data=dict({kw_args}, expected=expected, atol=atol),\n"
 
     vec_arg_names = ", ".join([f'"{arg}"' for arg in args
                                if arg.startswith("tangent_vec") or arg.endswith("point")])
@@ -101,7 +101,6 @@ def _write_vec_test_snippet(method, level=1):
 
 
 # TODO: check (automatically) if metric or space
-# TODO: need to consider imports for vectorized (pytest and generate_vectorized_data)
 
 
 def write_test_method_snippets(method, has_direct_test_, has_vec_test_):
@@ -113,3 +112,22 @@ def write_test_method_snippets(method, has_direct_test_, has_vec_test_):
         code_snippets[f"test_{method.short_name}_vec"] = _write_vec_test_snippet(method)
 
     return code_snippets
+
+
+def get_missing_imports(source_ls):
+    source = ''.join(source_ls)
+    imports = [
+        "geomstats.test.vectorization.generate_vectorization_data",
+        "geomstats.test.random.get_random_tangent_vec"
+    ]
+
+    imports_ = []
+
+    if "@pytest.mark.vec" in source:
+        imports_.append("pytest")
+
+    for import_ in imports:
+        if f"{import_.split('.')[-1]}(" in source:
+            imports_.append(import_)
+
+    return imports_
