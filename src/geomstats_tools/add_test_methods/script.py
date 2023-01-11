@@ -42,7 +42,7 @@ def add_missing_test_methods(
         cls_import, visitor_type="basic-methods", packages_dir=[geomstats_dir]
     )
 
-    test_case_cls_import = update_test_case_cls_import(class_)
+    test_case_cls_import = update_test_case_cls_import(class_, test_case_cls_import)
     test_case_class = get_class_given_import(
         test_case_cls_import, visitor_type="basic-methods", packages_dir=[geomstats_dir]
     )
