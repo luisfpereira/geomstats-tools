@@ -27,7 +27,9 @@ def find_class_lims(class_name, source):
             to_break = True
             continue
 
-        if to_break and not line.strip() == "" and not line.startswith(" "):
+        if to_break and not (
+            line.strip() == "" or line.startswith(" ") or line.startswith(")")
+        ):
             end_line = i
             break
 
