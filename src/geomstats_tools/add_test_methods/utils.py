@@ -13,6 +13,9 @@ def collect_methods_info(cls_methods, tested_methods_names):
 
     methods_info = {}
     for method in cls_methods:
+        if "random" in method.short_name:
+            continue
+
         has_direct_test_ = has_direct_test(method.short_name, tested_methods_names)
         has_vec_test_ = has_vec_test(method.short_name, tested_methods_names)
 

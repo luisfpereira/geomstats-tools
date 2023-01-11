@@ -103,7 +103,7 @@ def from_cls_dict_to_list(cls_dict):
             lines_ = lines_.splitlines(True)
 
         if lines and lines[-1] != "\n":
-            lines_.append("\n")
+            lines.append("\n")
         lines.extend(lines_)
 
     return lines
