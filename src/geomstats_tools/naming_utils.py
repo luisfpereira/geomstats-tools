@@ -6,11 +6,15 @@ def get_test_case_cls_import(cls_import, is_abstract=False):
 
     import_ = f"{cls_import_ls[0]}.test."
     if is_abstract:
-        import_ += f"{'.'.join(cls_import_ls[1:-2])}.base.{cls_import_ls[-1]}"
+        import_ += f"{'.'.join(cls_import_ls[1:-2])}.base"
     else:
-        import_ += ".".join(cls_import_ls[1:])
+        import_ += ".".join(cls_import_ls[1:-1])
 
-    import_ += "TestCase"
+    cls_name = cls_import_ls[-1]
+    if cls_name.startswith("_"):
+        cls_name = cls_name[1:]
+
+    import_ += f".{cls_name}TestCase"
     return import_
 
 
