@@ -102,9 +102,23 @@ def from_cls_dict_to_list(cls_dict):
         if type(lines_) is str:
             lines_ = lines_.splitlines(True)
 
-        if lines and lines[-1] != "\n":
-            lines.append("\n")
+        try:
+            if lines[-1] == "\n" and lines[-2] == "\n":
+                lines.pop()
+
+        except IndexError:
+            pass
+
+        try:
+            if lines[-1] != "\n":
+                lines.append("\n")
+        except IndexError:
+            pass
+
         lines.extend(lines_)
+
+    if lines[-1] != "\n":
+        lines.append("\n")
 
     return lines
 

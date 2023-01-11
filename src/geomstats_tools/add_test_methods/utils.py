@@ -60,7 +60,7 @@ def _write_point_creation_snippet(args, level=2):
             code += _base_point_snippet(arg, level=level)
 
         # TODO: is this generic enough?
-        elif arg.startswith("tangent_vec"):
+        elif arg.startswith("tangent_vec") and point_args:
             code += _tangent_point_snippet(arg, point_args[0], level=level)
 
     return code
