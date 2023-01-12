@@ -72,7 +72,7 @@ def _write_generate_vec_snippet(args, level=2):
     code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
     kw_args = ", ".join([f"{arg}={arg}" for arg in args])
-    code += f"{TAB*arg_lvl}data=dict({kw_args}, expected=expected, atol=atol),\n"
+    code += f"{TAB*arg_lvl}data=[dict({kw_args}, expected=expected, atol=atol)],\n"
 
     vec_arg_names = ", ".join(
         [

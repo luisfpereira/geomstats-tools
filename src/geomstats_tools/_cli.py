@@ -12,6 +12,16 @@
 
 # TODO: create better messages
 
+# TODO: sort "_vec" methods after "normal" ones
+
+# TODO: create given test for a given class (vec as flag)
+
+# TODO: check if test method or data is overriden (create report?)
+
+# TODO: bring here backends utils
+
+# TODO: ability to create random_tests at least one after something and vice-versa?
+
 
 import click
 
@@ -75,6 +85,8 @@ def create_test(
         sort_data_methods as sort_data_methods_,
     )
 
+    # TODO: fix test name if private
+
     out = create_test_(
         cls_import,
         test_cls_name=test_cls_name,
@@ -130,6 +142,8 @@ def create_test(
 def info_tests(cls_import, test_case_cls_import, geomstats_repo_dir):
     """Print information about public methods and available tests."""
     from geomstats_tools.info_tests import print_info_tests
+
+    # TODO: check printing order
 
     print_info_tests(
         cls_import,
@@ -206,7 +220,7 @@ def missing_data_methods(
 
 
 @main_cli.command()
-@click.argument("test-cls-import", nargs=1, type=str)
+@click.argument("test-case-cls-import", nargs=1, type=str)
 @add_options(
     [
         _data_cls_import_option,
