@@ -17,11 +17,9 @@ def identify_test_type(test_methods, missing_data_methods_names, markers):
 
 TYPE2SNIPPET = {
     "vec": """    def {func_name}(self):
-        data = [dict(n_reps=n_reps) for n_reps in self.N_VEC_REPS]
-        return self.generate_tests(data)\n""",
+        return self.generate_vec_data()\n""",
     "random": """    def {func_name}(self):
-        data = [dict(n_points=n_points) for n_points in self.N_RANDOM_POINTS]
-        return self.generate_tests(data)\n""",
+        return self.generate_random_data()\n""",
 }
 
 
