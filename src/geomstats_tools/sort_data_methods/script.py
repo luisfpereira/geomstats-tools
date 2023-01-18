@@ -17,13 +17,13 @@ from .utils import reorder_methods_given_source
 
 @update_geomstats_repo_dir
 def sort_data_methods(
-    test_cls_import, *, data_cls_import=None, geomstats_repo_dir=None, tests_loc="tests"
+    test_case_cls_import, *, data_cls_import=None, geomstats_repo_dir=None, tests_loc="tests"
 ):
     data_module_import, data_cls_name = get_info_from_data_import(
-        test_cls_import, data_cls_import, tests_loc
+        test_case_cls_import, data_cls_import, tests_loc
     )
 
-    class_ = get_class_given_import(test_cls_import, visitor_type="basic-methods")
+    class_ = get_class_given_import(test_case_cls_import, visitor_type="basic-methods")
     method_names = [
         method.short_name
         for method in class_.methods

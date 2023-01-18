@@ -153,7 +153,7 @@ def info_tests(cls_import, test_case_cls_import, geomstats_repo_dir):
 
 
 @main_cli.command()
-@click.argument("test-cls-import", nargs=1, type=str)
+@click.argument("test-case-cls-import", nargs=1, type=str)
 @add_options(
     [
         _data_cls_import_option,
