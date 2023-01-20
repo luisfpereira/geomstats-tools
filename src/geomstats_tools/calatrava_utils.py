@@ -11,7 +11,8 @@ from calatrava.parser.ast.uml import (
 
 
 def keep_only_public_methods(methods):
-    return [method for method in methods if method.is_public and not method.is_setter]
+    return [method for method in methods if method.is_public and not method.is_setter
+            and "." not in method.short_name]
 
 
 def remove_repeated_methods(methods):
