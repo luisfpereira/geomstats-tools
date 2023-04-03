@@ -26,6 +26,7 @@ def reorder_methods(cls_dict, order):
 
 
 def reorder_methods_given_source(source, class_name, methods_order):
+    # TODO: better abstractions for these operations
 
     start_line, end_line = find_class_lims(class_name, source)
     cls_source = source[start_line:end_line]

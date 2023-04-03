@@ -11,6 +11,7 @@ def get_related_tests(method_name, test_names):
 
 
 def collect_info_tests(methods_names, test_names):
+    # TODO: output class instead?
     test_names = set(test_names)
 
     direct_tests = []

@@ -1,4 +1,5 @@
 import ast
+import os
 
 from calatrava.parser.ast.find_imports import Module as ImportsModule
 from calatrava.parser.ast.uml import (
@@ -11,8 +12,11 @@ from calatrava.parser.ast.uml import (
 
 
 def keep_only_public_methods(methods):
-    return [method for method in methods if method.is_public and not method.is_setter
-            and "." not in method.short_name]
+    return [
+        method
+        for method in methods
+        if method.is_public and not method.is_setter and "." not in method.short_name
+    ]
 
 
 def remove_repeated_methods(methods):
@@ -33,39 +37,8 @@ def remove_properties(methods):
     return [method for method in methods if not method.is_property]
 
 
-def get_classes_given_imports(imports, visitor_type="basic", packages_dir=None):
-    if packages_dir is None:
-        packages = [Package("geomstats", classes_visitor=visitor_type)]
-    else:
-        packages = [
-            Package(package_dir, classes_visitor=visitor_type)
-            for package_dir in packages_dir
-        ]
-
-    package_manager = PackageManager(packages)
-
-    for cls_import in imports:
-        package_manager.find(cls_import)
-    package_manager.update_inheritance()
-
-    classes = []
-    for cls_import in imports:
-        class_ = package_manager.get_classes()[cls_import]
-        if not class_.found:
-            raise Exception(f"Cannot find `{cls_import}`")
-
-        classes.append(class_)
-
-    return classes
-
-
-def get_class_given_import(cls_import, visitor_type="basic", packages_dir=None):
-    return get_classes_given_imports(
-        [cls_import], visitor_type=visitor_type, packages_dir=packages_dir
-    )[0]
-
-
 def class_is_defined(cls_import, package_dir):
+    # TODO: needs to be different
     package = Package(package_dir, classes_visitor="basic")
     package_manager = PackageManager([package])
 
@@ -91,3 +64,26 @@ def collect_imports(source):
     module = _VirtualModule(source)
 
     return module.get_imports()
+
+
+def forget_module(class_):
+    """Forget given module so that it can be reloaded."""
+    # TODO: add this behavior to calatrava?
+    class_.module.package.modules_ls.remove(class_.module)
+
+
+def get_cls_module_path(class_):
+    # TODO: because file does not exist; improve in calatrava
+    module = class_.module
+    class_import = class_.long_name
+    module_import = module.long_name
+    if ".".join(class_import.split(".")[:-1]) != module_import:
+        return (
+            os.path.join(
+                module.package.path,
+                f"{os.path.sep}".join(class_import.split(".")[1:-1]),
+            )
+            + ".py"
+        )
+
+    return module.path

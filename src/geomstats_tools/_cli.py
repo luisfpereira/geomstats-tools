@@ -22,8 +22,17 @@
 
 # TODO: ability to create random_tests at least one after something and vice-versa?
 
+# TODO: identify (and delete?) skips of non-existing tests
+
+# TODO: reconstruct full class without inheritance (to consult)
+
+# TODO: move cli tools to "script" for clear separation
+
 
 import click
+
+from geomstats_tools.calatrava_utils import forget_module
+from geomstats_tools.config import from_cli_inputs_to_config
 
 _geomstats_repo_dir_option = click.option(
     "--geomstats-repo-dir", "-r", nargs=1, type=str, default=None
@@ -86,54 +95,50 @@ def create_test(
     )
 
     # TODO: fix test name if private
+    # TODO: make use of `test_cls_name`
 
-    out = create_test_(
-        cls_import,
+    config = from_cli_inputs_to_config(
+        cls_import=cls_import,
         test_cls_name=test_cls_name,
         test_case_cls_import=test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc,
+        classes_visitor="basic-methods",
     )
 
-    if all(not out_[1] for out_ in out):
+    out = create_test_(config)
+
+    classe_types = ("test_case", "data", "test")
+
+    if all(not out_ for out_ in out):
         print("Everything already exists.")
         return
 
     msg = "Created:"
-    for out_ in out:
-        if out_[1]:
-            msg += f"\n  -{out_[0]}"
+    for class_type, out_ in zip(classe_types, out):
+        if out_:
+            class_ = config.get_class(class_type)
+            msg += f"\n  -{class_.long_name}"
+
     print(msg)
+
+    # TODO: update calatrava
+    # new files may have been created
+    packages_config = config.packages_config
+    packages_config.package_manager = packages_config._instantiate_package_manager()
 
     if basic:
         return
 
-    test_case_cls_import_ = out[0][0]
-    data_cls_import_ = out[1][0]
+    if out[0]:
+        add_missing_test_methods(config)
 
-    if out[0][1]:
-        add_missing_test_methods(
-            cls_import,
-            test_case_cls_import=test_case_cls_import_,
-            geomstats_repo_dir=geomstats_repo_dir,
-        )
+    if out[1]:
 
-    if out[1][1]:
+        add_missing_data_methods(config)
 
-        add_missing_data_methods(
-            test_case_cls_import_,
-            data_cls_import=data_cls_import_,
-            geomstats_repo_dir=geomstats_repo_dir,
-            tests_loc=tests_loc,
-        )
-
-        sort_data_methods_(
-            test_case_cls_import_,
-            data_cls_import=data_cls_import_,
-            geomstats_repo_dir=geomstats_repo_dir,
-            tests_loc=tests_loc,
-        )
+        sort_data_methods_(config)
 
 
 @main_cli.command()
@@ -141,15 +146,17 @@ def create_test(
 @add_options([_test_case_cls_import_option, _geomstats_repo_dir_option])
 def info_tests(cls_import, test_case_cls_import, geomstats_repo_dir):
     """Print information about public methods and available tests."""
+    # TODO: check printing order
     from geomstats_tools.info_tests import print_info_tests
 
-    # TODO: check printing order
-
-    print_info_tests(
-        cls_import,
+    config = from_cli_inputs_to_config(
+        cls_import=cls_import,
         test_case_cls_import=test_case_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
+        classes_visitor="basic-methods",
     )
+
+    print_info_tests(config)
 
 
 @main_cli.command()
@@ -174,18 +181,21 @@ def sort_data_methods(
         sort_data_methods as sort_data_methods_,
     )
 
-    data_path, data_cls_name = sort_data_methods_(
-        test_case_cls_import,
+    config = from_cli_inputs_to_config(
+        test_case_cls_import=test_case_cls_import,
         data_cls_import=data_cls_import,
-        geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc,
+        geomstats_repo_dir=geomstats_repo_dir,
+        classes_visitor="basic-methods",
     )
+
+    data_path, data_cls_name = sort_data_methods_(config)
 
     print(f"Sorted `{data_cls_name}` in `{data_path}`")
 
 
 @main_cli.command()
-@click.argument("test-cls-import", nargs=1, type=str)
+@click.argument("test-case-cls-import", nargs=1, type=str)
 @add_options(
     [
         _data_cls_import_option,
@@ -203,12 +213,15 @@ def missing_data_methods(
     """
     from geomstats_tools.missing_data_methods import print_missing_data_methods
 
-    missing_methods_names = print_missing_data_methods(
-        test_case_cls_import,
+    config = from_cli_inputs_to_config(
+        test_case_cls_import=test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc,
+        classes_visitor="basic-methods",
     )
+
+    missing_methods_names = print_missing_data_methods(config)
 
     if missing_methods_names:
         indentation = " " * 2
@@ -238,29 +251,27 @@ def add_data_methods(
         sort_data_methods as sort_data_methods_,
     )
 
-    out = add_missing_data_methods(
-        test_case_cls_import,
+    config = from_cli_inputs_to_config(
+        test_case_cls_import=test_case_cls_import,
         data_cls_import=data_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
         tests_loc=tests_loc,
+        classes_visitor="basic-methods",
     )
-    if out is None:
+    data_class = config.get_class("data")
+
+    out = add_missing_data_methods(config)
+
+    if not out:
         print("All data methods are already defined")
         return
 
-    data_path, data_cls_name = out
-
     msg = "Updated"
     if sort:
-        sort_data_methods_(
-            test_case_cls_import,
-            data_cls_import=data_cls_import,
-            geomstats_repo_dir=geomstats_repo_dir,
-            tests_loc=tests_loc,
-        )
+        sort_data_methods_(config)
         msg += " and sorted"
 
-    msg += f" `{data_cls_name}` in `{data_path}`"
+    msg += f" `{data_class.name}` in `{data_class.module.long_name}`"
     print(msg)
 
 
@@ -299,46 +310,48 @@ def add_test_methods(
         sort_data_methods as sort_data_methods_,
     )
 
-    out = add_missing_test_methods(
-        cls_import,
+    config = from_cli_inputs_to_config(
+        cls_import=cls_import,
         test_case_cls_import=test_case_cls_import,
         geomstats_repo_dir=geomstats_repo_dir,
+        tests_loc=tests_loc,
+        classes_visitor="basic-methods",
     )
 
-    if out is None:
+    out = add_missing_test_methods(config)
+
+    if not out:
         print("No missing test case methods.")
         return
 
-    test_path, test_case_cls_import, test_cls_name = out
-    msg = f"Updated `{test_cls_name}` in `{test_path}`"
+    test_case_class = config.get_class("test_case")
+
+    msg = (
+        f"Updated `{test_case_class.short_name}` "
+        f"in `{test_case_class.module.long_name}`"
+    )
 
     if not update_data:
         msg += "."
         print(msg)
         return
 
-    out = add_missing_data_methods(
-        test_case_cls_import,
-        data_cls_import=data_cls_import,
-        geomstats_repo_dir=geomstats_repo_dir,
-        tests_loc=tests_loc,
-    )
-    if out is None:
+    # forget class since was updated above
+    forget_module(test_case_class)
+
+    out = add_missing_data_methods(config)
+    if not out:
         msg += "."
         print(msg)
         return
-    data_path, data_cls_name = out
+
+    data_class = config.get_class("data")
 
     msg += " and corresponding data methods"
-    msg += f" in `{data_cls_name}` in `{data_path}`."
+    msg += f" in `{data_class.short_name}` in `{data_class.module.long_name}`."
 
     if sort:
-        sort_data_methods_(
-            test_case_cls_import,
-            data_cls_import=data_cls_import,
-            geomstats_repo_dir=geomstats_repo_dir,
-            tests_loc=tests_loc,
-        )
+        sort_data_methods_(config)
         msg += " Data methods were also sorted."
 
     print(msg)

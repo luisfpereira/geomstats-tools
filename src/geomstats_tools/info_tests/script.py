@@ -1,11 +1,4 @@
-import os
-
-from geomstats_tools.args_manip import (
-    update_geomstats_repo_dir,
-    update_test_case_cls_import,
-)
 from geomstats_tools.calatrava_utils import (
-    get_class_given_import,
     keep_only_public_methods,
     remove_repeated_methods,
 )
@@ -16,20 +9,16 @@ from .utils import (
     collect_info_tests,
 )
 
+# TODO: some methods are printed twice
 
-@update_geomstats_repo_dir
-def print_info_tests(cls_import, *, test_case_cls_import=None, geomstats_repo_dir=None):
-    geomstats_dir = os.path.join(geomstats_repo_dir, "geomstats")
+# TODO: receive a logger instead of printer?
 
-    class_ = get_class_given_import(
-        cls_import, visitor_type="basic-methods", packages_dir=[geomstats_dir]
-    )
 
-    test_case_cls_import = update_test_case_cls_import(class_, test_case_cls_import)
-    test_case_class = get_class_given_import(
-        test_case_cls_import, visitor_type="basic-methods", packages_dir=[geomstats_dir]
-    )
+def print_info_tests(config):
+    class_ = config.get_class("main")
+    test_case_class = config.get_class("test_case")
 
+    # TODO: use filters
     cls_methods = remove_repeated_methods(keep_only_public_methods(class_.all_methods))
     cls_methods_names = [method.short_name for method in cls_methods]
 

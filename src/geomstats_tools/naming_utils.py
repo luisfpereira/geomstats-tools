@@ -1,11 +1,14 @@
 import os
 
 
-def get_test_case_cls_import(cls_import, is_abstract=False):
+def get_test_case_cls_import(test_cases_subpackage_import, class_):
+    cls_import = class_.long_name
+
     cls_import_ls = cls_import.split(".")
 
-    import_ = f"{cls_import_ls[0]}.test."
-    if is_abstract:
+    import_ = f"{test_cases_subpackage_import}."
+
+    if class_.is_abstract:
         import_ += f"{'.'.join(cls_import_ls[1:-2])}.base"
     else:
         import_ += ".".join(cls_import_ls[1:-1])
@@ -18,25 +21,32 @@ def get_test_case_cls_import(cls_import, is_abstract=False):
     return import_
 
 
-def get_test_case_cls_import_from_class(class_):
-    return get_test_case_cls_import(class_.long_name, class_.is_abstract)
+def get_test_default_cls_name(cls_name):
+    # TODO: may need to handle differently private cases
+    return f"Test{cls_name.replace(' ', '')}"
 
 
-def get_test_data_cls_import(tests_loc, cls_import, is_abstract=False):
+def get_test_cls_import(tests_subpackage_import, class_, test_cls_name=None):
+    cls_import = class_.long_name
+
     cls_import_ls = cls_import.split(".")
 
-    import_ = f"{tests_loc}.data."
-    if is_abstract:
-        import_ += "base"
-    else:
-        import_ += f"{cls_import[-2]}"
+    cls_name = cls_import_ls[-1]
+    module_name = cls_import_ls[-2]
 
-    import_ += f"_data.{cls_import_ls[-1]}TestData"
-    return import_
+    if test_cls_name is None:
+        test_cls_name = get_test_default_cls_name(cls_name)
+
+    return f"{tests_subpackage_import}.test_{module_name}.{test_cls_name}"
 
 
-def get_test_data_cls_import_from_class(tests_loc, class_):
-    return get_test_data_cls_import(tests_loc, class_.long_name, class_.is_abstract)
+def is_test_case_cls(class_name):
+    return class_name.endswith("TestCase")
+
+
+def get_data_cls_import_from_class(data_module_import, class_):
+    # TODO: simplify
+    return get_data_cls_import(data_module_import, class_.long_name, class_.is_abstract)
 
 
 def get_data_cls_name(cls_name):
@@ -49,42 +59,33 @@ def get_data_cls_name(cls_name):
     return f"{start}TestData"
 
 
-def get_test_data_loc(cls_import, tests_loc):
+def get_data_cls_import(data_module_import, cls_import, is_abstract=False):
+    """Get test data class import.
+
+    Parameters
+    ----------
+    data_module_import : str
+        Import of data module.
+    cls_import : str
+        Can be the class or the test case import.
+    is_abstract: bool
+        Used only if cls_import is the class import .
+    """
     cls_import_ls = cls_import.split(".")
 
     cls_name = cls_import_ls[-1]
-    module_name = cls_import_ls[-2]
+
+    module_name = (
+        cls_import_ls[-2] if is_test_case_cls(cls_name) or not is_abstract else "base"
+    )
 
     data_cls_name = get_data_cls_name(cls_name)
 
-    return f"{tests_loc}.data.{module_name}_data", data_cls_name
-
-
-def get_test_cls_name(cls_name):
-    # TODO: may need to handle differently private cases
-    return f"Test{cls_name.replace(' ', '')}"
-
-
-def get_test_loc(cls_import, tests_loc):
-    cls_import_ls = cls_import.split(".")
-
-    cls_name = cls_import_ls[-1]
-    module_name = cls_import_ls[-2]
-
-    test_cls_name = get_test_cls_name(cls_name)
-
-    return f"{tests_loc}.tests_geomstats.test_{module_name}", test_cls_name
-
-
-def get_module_and_cls_from_import(cls_import):
-    data_cls_import_ls = cls_import.split(".")
-    module_import = ".".join(data_cls_import_ls[:-1])
-    cls_name = data_cls_import_ls[-1]
-
-    return module_import, cls_name
+    return f"{data_module_import}.{module_name}_data.{data_cls_name}"
 
 
 def is_test(method_name):
+    # TODO: is_test_method instead?
     return method_name.startswith("test_")
 
 

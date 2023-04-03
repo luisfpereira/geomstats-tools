@@ -1,11 +1,8 @@
 import os
 
-from geomstats_tools.calatrava_utils import class_is_defined
 from geomstats_tools.naming_utils import (
-    cls_import_to_filename,
-    get_test_case_cls_import_from_class,
-    get_test_data_cls_import_from_class,
-    module_import_to_filename,
+    get_data_cls_import_from_class,
+    get_test_case_cls_import,
 )
 from geomstats_tools.parsing_utils import add_imports_to_source
 from geomstats_tools.str_utils import (
@@ -30,8 +27,11 @@ def _from_class_to_base_test_data_names(class_):
     return [_from_class_to_test_data_name(base_class) for base_class in class_.bases]
 
 
-def get_test_case_imports(class_):
-    return [get_test_case_cls_import_from_class(base) for base in class_.bases]
+def get_test_case_imports(test_cases_subpackage_import, class_):
+    return [
+        get_test_case_cls_import(test_cases_subpackage_import, base)
+        for base in class_.bases
+    ]
 
 
 def write_test_case_snippet(class_, class_test_case, level=0):
@@ -112,9 +112,10 @@ def write_test_snippet(class_, test_cls_name, test_case_cls_name, data_cls_name)
     return code
 
 
-def get_data_imports(tests_loc, class_):
+def get_data_imports(data_module_import, class_):
     return [
-        get_test_data_cls_import_from_class(tests_loc, base) for base in class_.bases
+        get_data_cls_import_from_class(data_module_import, base)
+        for base in class_.bases
     ]
 
 
@@ -129,17 +130,6 @@ def write_test_data_snippet(class_, data_cls_name, level=0):
     )
 
     return code
-
-
-def get_path_from_cls_import(cls_import, repo_dir):
-    return os.path.join(
-        repo_dir,
-        cls_import_to_filename(cls_import),
-    )
-
-
-def get_path_from_module_import(module_import, repo_dir):
-    return os.path.join(repo_dir, module_import_to_filename(module_import))
 
 
 def _write_to_file(path, source_ls):
@@ -170,10 +160,3 @@ def write_to_file(path, code_snippet, imports=()):
     new_source_ls = add_imports_to_source(source_ls, imports)
 
     _write_to_file(path, new_source_ls)
-
-
-def cls_already_exists(path, cls_import, package_dir):
-    if not os.path.exists(path):
-        return False
-
-    return class_is_defined(cls_import, package_dir)

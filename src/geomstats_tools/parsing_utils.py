@@ -51,7 +51,7 @@ def _is_function_def_start(line, indentation):
 
 def _get_function_name_from_def(line):
     line = line.strip()
-    return line[4: line.index("(")]
+    return line[4 : line.index("(")]
 
 
 def split_class(class_source):
@@ -162,8 +162,9 @@ def find_last_import_line(source_ls):
                 ")",
             ]
         ):
-            last_line = line_num
-        elif not any(
+            continue
+
+        if not any(
             line.startswith(str_)
             for str_ in [
                 "\n",
@@ -237,6 +238,6 @@ def add_imports_to_source(source_ls, imports):
     new_source_ls.extend(code_ls)
     if last_import_line == -1:
         new_source_ls.extend(["\n", "\n"])
-    new_source_ls.extend(source_ls[last_import_line + 1:])
+    new_source_ls.extend(source_ls[last_import_line + 1 :])
 
     return new_source_ls

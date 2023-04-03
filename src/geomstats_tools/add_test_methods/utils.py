@@ -7,12 +7,17 @@ from geomstats_tools.str_utils import (
     VERIFICATION_MSG,
 )
 
+IGNORES = ("default_metric",)
+
 
 def collect_methods_info(cls_methods, tested_methods_names):
     tested_methods_names = set(tested_methods_names)
 
     methods_info = {}
     for method in cls_methods:
+        if method.short_name in IGNORES:
+            continue
+
         if "random" in method.short_name:
             continue
 
@@ -20,6 +25,7 @@ def collect_methods_info(cls_methods, tested_methods_names):
         has_vec_test_ = has_vec_test(method.short_name, tested_methods_names)
 
         if not (has_direct_test_ and has_vec_test_):
+            # TODO: use named tuple instead?
             methods_info[method.short_name] = {
                 "method": method,
                 "has_direct_test": has_direct_test_,
