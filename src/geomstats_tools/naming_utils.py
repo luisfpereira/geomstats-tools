@@ -1,6 +1,16 @@
 import os
 
 
+def is_metric(class_):
+    for cmp_name in ["Connection", "Metric"]:
+        if cmp_name in class_.long_name:
+            break
+    else:
+        return False
+
+    return True
+
+
 def get_test_case_cls_import(test_cases_subpackage_import, class_):
     cls_import = class_.long_name
 

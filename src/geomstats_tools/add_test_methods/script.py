@@ -49,6 +49,7 @@ def add_missing_test_methods(config):
     for method_info in methods_info.values():
         code_snippets.update(
             write_test_method_snippets(
+                class_,
                 method_info["method"],
                 method_info["has_direct_test"],
                 method_info["has_vec_test"],

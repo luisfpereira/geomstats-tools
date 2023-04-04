@@ -1,6 +1,7 @@
 from geomstats_tools.naming_utils import (
     has_direct_test,
     has_vec_test,
+    is_metric,
 )
 from geomstats_tools.str_utils import (
     TAB,
@@ -35,25 +36,29 @@ def collect_methods_info(cls_methods, tested_methods_names):
     return methods_info
 
 
-def _write_direct_test_snippet(method, level=1):
+def _write_direct_test_snippet(class_, method, level=1):
     args = [arg for arg in method.args_list if arg != "self"]
     fnc_lvl = level + 1
 
     code = TAB * level + "def test_{func_name}(self, {args_list}, expected, atol):\n"
     code += f"{TAB*fnc_lvl}{VERIFICATION_MSG}\n"
 
-    code += TAB * fnc_lvl + "res = self.space.{func_name}({args_list})\n"
+    code += TAB * fnc_lvl + "res = self.{instance}.{func_name}({args_list})\n"
     code += f"{TAB*fnc_lvl}self.assertAllClose(res, expected, atol=atol)\n"
 
-    return code.format(func_name=method.short_name, args_list=", ".join(args))
+    instance = "space.metric" if is_metric(class_) else "space"
+
+    return code.format(
+        instance=instance, func_name=method.short_name, args_list=", ".join(args)
+    )
 
 
 def _base_point_snippet(arg_name, level=2):
-    return f"{TAB*level}{arg_name} = self.space.random_point()\n"
+    return f"{TAB*level}{arg_name} = self.data_generator.random_point()\n"
 
 
 def _tangent_point_snippet(arg_name, base_point="base_point", level=2):
-    return f"{TAB*level}{arg_name} = get_random_tangent_vec(self.space, {base_point})\n"
+    return f"{TAB*level}{arg_name} = self.data_generator.random_tangent_vec({base_point})\n"
 
 
 def _write_point_creation_snippet(args, level=2):
@@ -97,7 +102,7 @@ def _write_generate_vec_snippet(args, level=2):
     return code
 
 
-def _write_vec_test_snippet(method, level=1):
+def _write_vec_test_snippet(class_, method, level=1):
     func_name = method.short_name
     args = [arg for arg in method.args_list if arg != "self"]
     fnc_lvl = level + 1
@@ -108,8 +113,11 @@ def _write_vec_test_snippet(method, level=1):
 
     code += _write_point_creation_snippet(args, level=fnc_lvl)
 
-    # TODO: space or metric
-    code += f"\n{TAB*fnc_lvl}expected = self.space.{func_name}({', '.join(args)})\n"
+    instance = "space.metric" if is_metric(class_) else "space"
+
+    code += (
+        f"\n{TAB*fnc_lvl}expected = self.{instance}.{func_name}({', '.join(args)})\n"
+    )
 
     code += _write_generate_vec_snippet(args, level=fnc_lvl)
 
@@ -119,13 +127,17 @@ def _write_vec_test_snippet(method, level=1):
 # TODO: check (automatically) if metric or space
 
 
-def write_test_method_snippets(method, has_direct_test_, has_vec_test_):
+def write_test_method_snippets(class_, method, has_direct_test_, has_vec_test_):
     code_snippets = {}
     if not has_direct_test_:
-        code_snippets[f"test_{method.short_name}"] = _write_direct_test_snippet(method)
+        code_snippets[f"test_{method.short_name}"] = _write_direct_test_snippet(
+            class_, method
+        )
 
     if not has_vec_test_:
-        code_snippets[f"test_{method.short_name}_vec"] = _write_vec_test_snippet(method)
+        code_snippets[f"test_{method.short_name}_vec"] = _write_vec_test_snippet(
+            class_, method
+        )
 
     return code_snippets
 
@@ -134,7 +146,6 @@ def get_missing_imports(source_ls):
     source = "".join(source_ls)
     imports = [
         "geomstats.test.vectorization.generate_vectorization_data",
-        "geomstats.test.random.get_random_tangent_vec",
     ]
 
     imports_ = []
