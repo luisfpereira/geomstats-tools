@@ -189,7 +189,7 @@ class PackagesConfig:
         self.geomstats_loc = SubPackageLoc("geomstats", self.geomstats_repo_dir)
 
         if test_cases_subpackage_import is None:
-            test_cases_subpackage_import = "geomstats.test"
+            test_cases_subpackage_import = "geomstats.test_cases"
 
         self.test_cases_loc = SubPackageLoc(
             test_cases_subpackage_import, self.geomstats_repo_dir
@@ -201,7 +201,7 @@ class PackagesConfig:
         self.tests_loc = SubPackageLoc(tests_subpackage_import, self.geomstats_repo_dir)
 
         if data_subpackage_import is None:
-            data_subpackage_import = f"{self.tests_loc.package_name}.data"
+            data_subpackage_import = tests_subpackage_import
 
         self.data_loc = SubPackageLoc(data_subpackage_import, self.geomstats_repo_dir)
 

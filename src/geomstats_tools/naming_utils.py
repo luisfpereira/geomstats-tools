@@ -17,11 +17,7 @@ def get_test_case_cls_import(test_cases_subpackage_import, class_):
     cls_import_ls = cls_import.split(".")
 
     import_ = f"{test_cases_subpackage_import}."
-
-    if class_.is_abstract:
-        import_ += f"{'.'.join(cls_import_ls[1:-2])}.base"
-    else:
-        import_ += ".".join(cls_import_ls[1:-1])
+    import_ += ".".join(cls_import_ls[1:-1])
 
     cls_name = cls_import_ls[-1]
     if cls_name.startswith("_"):
@@ -42,12 +38,12 @@ def get_test_cls_import(tests_subpackage_import, class_, test_cls_name=None):
     cls_import_ls = cls_import.split(".")
 
     cls_name = cls_import_ls[-1]
-    module_name = cls_import_ls[-2]
+    subpackage_name = ".test_".join(cls_import_ls[1:-1])
 
     if test_cls_name is None:
         test_cls_name = get_test_default_cls_name(cls_name)
 
-    return f"{tests_subpackage_import}.test_{module_name}.{test_cls_name}"
+    return f"{tests_subpackage_import}.test_{subpackage_name}.{test_cls_name}"
 
 
 def is_test_case_cls(class_name):
@@ -84,14 +80,16 @@ def get_data_cls_import(data_module_import, cls_import, is_abstract=False):
     cls_import_ls = cls_import.split(".")
 
     cls_name = cls_import_ls[-1]
+    index = 2 if is_test_case_cls(cls_name) else 1
 
-    module_name = (
-        cls_import_ls[-2] if is_test_case_cls(cls_name) or not is_abstract else "base"
-    )
+    subpackage_name = "test_"
+    subpackage_name += ".test_".join(cls_import_ls[index:-2])
+
+    module_name = cls_import_ls[-2]
 
     data_cls_name = get_data_cls_name(cls_name)
 
-    return f"{data_module_import}.{module_name}_data.{data_cls_name}"
+    return f"{data_module_import}.{subpackage_name}.data.{module_name}.{data_cls_name}"
 
 
 def is_test(method_name):
