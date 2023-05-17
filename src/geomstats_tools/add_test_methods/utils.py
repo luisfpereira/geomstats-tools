@@ -40,7 +40,7 @@ def _write_direct_test_snippet(class_, method, level=1):
     args = [arg for arg in method.args_list if arg != "self"]
     fnc_lvl = level + 1
 
-    code = TAB * level + "def test_{func_name}(self, {args_list}, expected, atol):\n"
+    code = TAB * level + "def test_{func_name}(self, {args_list}expected, atol):\n"
     code += f"{TAB*fnc_lvl}{VERIFICATION_MSG}\n"
 
     code += TAB * fnc_lvl + "res = self.{instance}.{func_name}({args_list})\n"
@@ -48,8 +48,11 @@ def _write_direct_test_snippet(class_, method, level=1):
 
     instance = "space.metric" if is_metric(class_) else "space"
 
+    args_sep = "," if args else ""
     return code.format(
-        instance=instance, func_name=method.short_name, args_list=", ".join(args)
+        instance=instance,
+        func_name=method.short_name,
+        args_list=", ".join(args) + args_sep,
     )
 
 
@@ -83,7 +86,10 @@ def _write_generate_vec_snippet(args, level=2):
     code = f"\n{TAB*level}vec_data = generate_vectorization_data(\n"
 
     kw_args = ", ".join([f"{arg}={arg}" for arg in args])
-    code += f"{TAB*arg_lvl}data=[dict({kw_args}, expected=expected, atol=atol)],\n"
+    kw_sep = "," if kw_args else ""
+    code += (
+        f"{TAB*arg_lvl}data=[dict({kw_args}{kw_sep} expected=expected, atol=atol)],\n"
+    )
 
     vec_arg_names = ", ".join(
         [
